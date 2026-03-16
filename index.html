@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barangay Danao - CitiConnect Portal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a0a10 0%, #8B1538 50%, #D4AF37 100%);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Segoe UI', sans-serif; padding: 20px;
+        }
+        .landing-card {
+            background: white; border-radius: 24px; padding: 50px 40px;
+            max-width: 520px; width: 100%; text-align: center;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+        }
+        .logo { width: 120px; height: 120px; object-fit: contain; margin-bottom: 20px; border-radius: 50%; }
+        .logo-fallback {
+            width: 100px; height: 100px;
+            background: linear-gradient(135deg, #8B1538, #D4AF37);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 3em; margin: 0 auto 20px;
+        }
+        h1 { font-size: 1.8em; color: #1f2937; margin-bottom: 6px; font-weight: 800; }
+        .subtitle { color: #8B1538; font-size: 1em; font-weight: 600; margin-bottom: 6px; }
+        .tagline { color: #6b7280; font-size: 0.9em; margin-bottom: 40px; line-height: 1.6; }
+        .portal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 30px; }
+        .portal-btn {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 10px; padding: 28px 16px; border-radius: 16px; text-decoration: none;
+            font-weight: 700; font-size: 1em; transition: all 0.2s ease; cursor: pointer;
+        }
+        .portal-btn .icon { font-size: 2.4em; line-height: 1; }
+        .portal-btn .label { font-size: 0.95em; font-weight: 700; }
+        .portal-btn .desc { font-size: 0.75em; font-weight: 500; opacity: 0.8; margin-top: -4px; }
+        .btn-citizen { background: linear-gradient(135deg, #8B1538, #b01e48); color: white; }
+        .btn-citizen:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(139,21,56,0.4); }
+        .btn-lgu { background: linear-gradient(135deg, #1f2937, #374151); color: white; }
+        .btn-lgu:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(31,41,55,0.4); }
+        .divider { height: 1px; background: #f3f4f6; margin: 20px 0; }
+        .footer-text { color: #9ca3af; font-size: 0.8em; line-height: 1.8; }
+        @media (max-width: 400px) { .portal-grid { grid-template-columns: 1fr; } .landing-card { padding: 36px 24px; } }
+    </style>
+</head>
+<body>
+    <div class="landing-card">
+        <img src="logo.png" alt="Barangay Danao Logo" class="logo"
+             onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex';">
+        <div class="logo-fallback" id="logoFallback" style="display:none;">🏛️</div>
+        <h1>CitiConnect Portal</h1>
+        <p class="subtitle">Barangay Danao, Antequera, Bohol</p>
+        <p class="tagline">A community reporting platform for a safer,<br>cleaner, and better-maintained barangay.</p>
+        <div class="portal-grid">
+            <a href="citizen-portal.html" class="portal-btn btn-citizen">
+                <span class="icon">👤</span>
+                <span class="label">Citizen Portal</span>
+                <span class="desc">Submit a report</span>
+            </a>
+            <a href="lgu-portal.html" class="portal-btn btn-lgu">
+                <span class="icon">🔐</span>
+                <span class="label">LGU Portal</span>
+                <span class="desc">Admin dashboard</span>
+            </a>
+        </div>
+        <div class="divider"></div>
+        <p class="footer-text">Working together for a better community<br>© Barangay Danao — Antequera, Bohol</p>
+    </div>
+</body>
+</html>
