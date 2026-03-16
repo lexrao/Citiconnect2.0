@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/citizen-portal.html" },
+    { "source": "/citizen", "destination": "/citizen-portal.html" },
+    { "source": "/lgu", "destination": "/lgu-portal.html" },
+    { "source": "/admin", "destination": "/lgu-portal.html" }
+  ]
+}

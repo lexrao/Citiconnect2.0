@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LGU Admin Portal - Barangay Danao</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="logo.png" alt="Barangay Danao Logo" class="login-logo" onerror="this.style.display='none'">
+                <h1>🔐 LGU Admin Portal</h1>
+                <p class="login-subtitle">Barangay Danao, Antequera, Bohol</p>
+            </div>
+
+            <div id="loginAlert" class="alert"></div>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">👤 Username</label>
+                    <input type="text" id="username" name="username" required placeholder="Enter your username" autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">🔑 Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter your password" autocomplete="current-password">
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="rememberMe">
+                        <span>Remember me</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <span>🚀</span> Sign In
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <p>Don't have an account? <a href="#" onclick="showRegisterForm(); return false;" class="link-primary">Register here</a></p>
+                <hr style="margin: 15px 0; opacity: 0.2;">
+                <p style="font-size: 0.85em; margin-bottom: 5px;">Default credentials for demo:</p>
+                <p style="font-size: 0.85em;"><strong>Username:</strong> admin | <strong>Password:</strong> admin123</p>
+                <hr style="margin: 15px 0; opacity: 0.2;">
+                <a href="citizen-portal.html" class="link-secondary">
+                    👤 Go to Citizen Portal
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Screen -->
+    <div id="registerScreen" class="login-container" style="display: none;">
+        <div class="login-card" style="max-width: 550px;">
+            <div class="login-header">
+                <img src="logo.png" alt="Barangay Danao Logo" class="login-logo" onerror="this.style.display='none'">
+                <h1>📝 Register New Account</h1>
+                <p class="login-subtitle">Barangay Danao LGU Staff Registration</p>
+            </div>
+
+            <div id="registerAlert" class="alert"></div>
+
+            <form id="registerForm" class="login-form">
+                <div class="form-group">
+                    <label for="regFullName">👤 Full Name <span class="required">*</span></label>
+                    <input type="text" id="regFullName" name="fullName" required placeholder="Enter your full name" autocomplete="name">
+                </div>
+
+                <div class="form-group">
+                    <label for="regEmail">📧 Email Address <span class="required">*</span></label>
+                    <input type="email" id="regEmail" name="email" required placeholder="your.email@example.com" autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="regUsername">🆔 Username <span class="required">*</span></label>
+                    <input type="text" id="regUsername" name="username" required placeholder="Choose a username" autocomplete="username" minlength="4">
+                    <small style="color: #6b7280; display: block; margin-top: 5px;">
+                        Must be at least 4 characters
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="regPassword">🔑 Password <span class="required">*</span></label>
+                    <input type="password" id="regPassword" name="password" required placeholder="Create a strong password" autocomplete="new-password" minlength="6">
+                    <small style="color: #6b7280; display: block; margin-top: 5px;">
+                        Must be at least 6 characters
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="regConfirmPassword">🔑 Confirm Password <span class="required">*</span></label>
+                    <input type="password" id="regConfirmPassword" name="confirmPassword" required placeholder="Re-enter your password" autocomplete="new-password">
+                </div>
+
+                <div class="form-group">
+                    <label for="regRole">👔 Role <span class="required">*</span></label>
+                    <select id="regRole" name="role" required>
+                        <option value="">Select your role</option>
+                        <option value="Administrator">Administrator</option>
+                        <option value="Staff">Staff Member</option>
+                        <option value="Field Officer">Field Officer</option>
+                        <option value="Data Entry">Data Entry Clerk</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="regPosition">💼 Position/Department</label>
+                    <input type="text" id="regPosition" name="position" placeholder="e.g., Barangay Secretary, Health Worker" autocomplete="organization-title">
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="agreeTerms" required>
+                        <span>I agree to the terms and conditions <span class="required">*</span></span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <span>✓</span> Create Account
+                </button>
+
+                <button type="button" onclick="showLoginForm()" class="btn btn-secondary btn-block" style="margin-top: 10px;">
+                    <span>←</span> Back to Login
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <p style="font-size: 0.85em; color: #6b7280;">
+                    Your account will be created and you can login immediately
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Admin Dashboard (Hidden until login) -->
+    <div id="adminDashboard" class="container" style="display: none;">
+        <!-- Header -->
+        <header>
+            <div class="header-content">
+                <div class="header-title">
+                    <div style="display: flex; align-items: center; gap: 20px;">
+                        <img src="logo.png" alt="Barangay Danao Logo" class="header-logo" onerror="this.style.display='none'">
+                        <div>
+                            <h1>📊 LGU Admin Portal</h1>
+                            <p class="subtitle">Barangay Danao, Antequera, Bohol</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="header-stats">
+                        <div class="header-stat">
+                            <div class="header-stat-value" id="headerTotalReports">0</div>
+                            <div class="header-stat-label">Total</div>
+                        </div>
+                        <div class="header-stat">
+                            <div class="header-stat-value" id="headerActiveReports">0</div>
+                            <div class="header-stat-label">Active</div>
+                        </div>
+                        <div class="header-stat">
+                            <div class="header-stat-value" id="headerResolvedReports">0</div>
+                            <div class="header-stat-label">Resolved</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <!-- New Reports Notification -->
+                        <div id="newReportsBadgeWrap" style="display:none; position:relative;">
+                            <span id="newReportsBadge" style="position:absolute;top:-6px;right:-6px;background:#ef4444;color:white;font-size:11px;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px;z-index:10;animation:pulse-badge 1.5s infinite;">0</span>
+                            <button onclick="refreshReports()" id="refreshBtn" class="btn btn-refresh" title="Refresh to load new reports">
+                                <span id="refreshIcon">↻</span> Refresh
+                            </button>
+                        </div>
+                        <button onclick="refreshReports()" id="refreshBtnPlain" class="btn btn-refresh" title="Refresh reports">
+                            <span id="refreshIconPlain">↻</span> Refresh
+                        </button>
+                        <div class="user-badge">
+                            <span>👤</span>
+                            <span id="currentUser">Admin</span>
+                        </div>
+                        <span id="roleBadge" style="background:#8B1538;color:white;padding:3px 12px;border-radius:12px;font-size:0.8em;font-weight:600;">🔑 Administrator</span>
+                        <a href="citizen-portal.html" class="btn btn-secondary">
+                            <span>👤</span> Citizen Portal
+                        </a>
+                        <button onclick="openNotificationSettings()" class="btn btn-secondary" title="Notification Settings" style="background:linear-gradient(135deg,#8B1538,#b91c4e);color:white;border:none;">
+                            <span>🔔</span> Notifications
+                        </button>
+                        <button onclick="logout()" class="btn btn-danger">
+                            <span>🚪</span> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('track')">
+                <span>📍</span> Track Reports
+            </button>
+            <button class="nav-tab" onclick="switchTab('dashboard')">
+                <span>📊</span> Dashboard
+            </button>
+            <button class="nav-tab" onclick="switchTab('analytics')">
+                <span>📈</span> Analytics
+            </button>
+            <button class="nav-tab" onclick="switchTab('manage')">
+                <span>⚙️</span> Manage Reports
+            </button>
+            <button class="nav-tab" onclick="switchTab('users')" id="usersTab" style="position:relative;">
+                <span>👥</span> Manage Users
+                <span id="pendingApprovalsBadge" style="display:none;position:absolute;top:6px;right:8px;background:#ef4444;color:white;font-size:11px;font-weight:800;min-width:18px;height:18px;border-radius:9px;align-items:center;justify-content:center;padding:0 4px;animation:pulse-badge 1.5s infinite;">0</span>
+            </button>
+        </nav>
+
+        <!-- Staff Notice Banner -->
+        <div id="staffNoticeBanner" style="display:none;background:linear-gradient(135deg,#1e40af,#2563eb);color:white;padding:14px 20px;border-radius:10px;margin-bottom:20px;align-items:center;gap:14px;">
+            <span style="font-size:1.5em;">👁️</span>
+            <div>
+                <strong style="font-size:1em;">Staff View-Only Mode</strong>
+                <p style="margin:3px 0 0;font-size:0.87em;opacity:0.9;">You can view and print reports. Contact an Administrator to make changes.</p>
+            </div>
+        </div>
+
+        <!-- Track Reports Tab -->
+        <div id="track" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📍 Track Reports</h2>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="exportBtnTrack" class="btn btn-success" onclick="exportToExcel()">
+                            <span>📊</span> Export to Excel
+                        </button>
+                        <button class="btn btn-secondary" onclick="displayReports()">
+                            <span>↻</span> Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <input type="text" id="searchQuery" placeholder="🔍 Search by ID, category, or location..." oninput="displayReports()">
+                    <select id="statusFilter" onchange="displayReports()">
+                        <option value="">All Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Resolved">Resolved</option>
+                    </select>
+                    <select id="categoryFilter" onchange="displayReports()">
+                        <option value="">All Categories</option>
+                        <option value="Waste Management">Waste Management</option>
+                        <option value="Infrastructure Damage">Infrastructure Damage</option>
+                        <option value="Environmental Violation">Environmental Violation</option>
+                        <option value="Public Safety">Public Safety</option>
+                        <option value="Water & Sanitation">Water & Sanitation</option>
+                        <option value="Street Lighting">Street Lighting</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <select id="priorityFilter" onchange="displayReports()">
+                        <option value="">All Priorities</option>
+                        <option value="High">High Priority</option>
+                        <option value="Medium">Medium Priority</option>
+                        <option value="Low">Low Priority</option>
+                    </select>
+                </div>
+
+                <div id="reportsList" class="reports-container"></div>
+            </div>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content">
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #fef3e6; color: #8B1538;">📊</div>
+                    <div class="stat-value" id="dashTotalReports">0</div>
+                    <div class="stat-label">Total Reports</div>
+                    <div class="stat-change positive">↑ 12% from last month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;">⏳</div>
+                    <div class="stat-value" id="dashPendingCount">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #fef3e6; color: #D4AF37;">🔄</div>
+                    <div class="stat-value" id="dashInProgressCount">0</div>
+                    <div class="stat-label">In Progress</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #d1fae5; color: #10b981;">✓</div>
+                    <div class="stat-value" id="dashResolvedCount">0</div>
+                    <div class="stat-label">Resolved</div>
+                    <div class="stat-change positive">↑ 85% resolution rate</div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;">
+                <button id="exportBtnDashboard" class="btn btn-success" onclick="exportToExcel()">
+                    <span>📊</span> Export to Excel
+                </button>
+                <button id="clearAllDataBtn" class="btn btn-danger" onclick="clearAllData()">
+                    <span>🗑️</span> Clear All Data
+                </button>
+            </div>
+
+            <!-- Interactive Map -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">🗺️ Barangay Danao - All Reports</h2>
+                </div>
+                <div class="map-container">
+                    <div id="lguMap"></div>
+                </div>
+                <div class="map-legend">
+                    <strong>Legend:</strong>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 10px;">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #ef4444;"></div>
+                            <span>High Priority</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #f59e0b;"></div>
+                            <span>Medium Priority</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #10b981;"></div>
+                            <span>Low Priority</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #6b7280;"></div>
+                            <span>Resolved</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Distribution -->
+            <div class="chart-container">
+                <div class="card-header">
+                    <h3 class="card-title">📈 Reports by Category</h3>
+                </div>
+                <div id="categoryChart"></div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="chart-container">
+                <div class="card-header">
+                    <h3 class="card-title">📋 Recent Activity</h3>
+                </div>
+                <div id="recentActivity"></div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #fef3e6; color: #8B1538;">⏱️</div>
+                    <div class="stat-value" id="avgResponseTime">N/A</div>
+                    <div class="stat-label">Avg Response Time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #fef3c7; color: #D4AF37;">📊</div>
+                    <div class="stat-value" id="resolutionRate">0%</div>
+                    <div class="stat-label">Resolution Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #d1fae5; color: #10b981;">👥</div>
+                    <div class="stat-value" id="activeUsers">0</div>
+                    <div class="stat-label">Active Citizens</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #fee2e2; color: #8B1538;">🔥</div>
+                    <div class="stat-value" id="criticalIssues">0</div>
+                    <div class="stat-label">Critical Issues</div>
+                </div>
+            </div>
+
+            <!-- ===== REPORTS BY CATEGORY CHART ===== -->
+            <div class="card" style="margin-bottom: 30px;" id="cardCategoryChart">
+                <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
+                    <h3 class="card-title">📊 Reports by Category</h3>
+                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                        <button class="btn-print-chart" onclick="printChartCard('cardCategoryChart','Reports by Category')" title="Print this chart">🖨️ Print Chart</button>
+                        <div class="chart-type-switcher" id="categorySwitcher">
+                        <button class="chart-type-btn active" onclick="switchCategoryChart('bar')" data-type="bar" title="Bar Chart">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="10" width="4" height="12"/><rect x="9" y="6" width="4" height="16"/><rect x="16" y="2" width="4" height="20"/></svg>
+                            Bar
+                        </button>
+                        <button class="chart-type-btn" onclick="switchCategoryChart('horizontalBar')" data-type="horizontalBar" title="Horizontal Bar">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="3" width="12" height="4"/><rect x="2" y="10" width="18" height="4"/><rect x="2" y="17" width="8" height="4"/></svg>
+                            H-Bar
+                        </button>
+                        <button class="chart-type-btn" onclick="switchCategoryChart('pie')" data-type="pie" title="Pie Chart">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 1 10 10H12V2z"/><path d="M12 12L4.93 19.07A10 10 0 0 1 12 2v10z" opacity=".6"/><path d="M12 12v10a10 10 0 0 1-7.07-2.93L12 12z" opacity=".3"/></svg>
+                            Pie
+                        </button>
+                        <button class="chart-type-btn" onclick="switchCategoryChart('doughnut')" data-type="doughnut" title="Doughnut Chart">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>
+                            Donut
+                        </button>
+                        <button class="chart-type-btn" onclick="switchCategoryChart('polarArea')" data-type="polarArea" title="Polar Area">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2v10H2A10 10 0 0 1 12 2z"/><path d="M12 12h10a10 10 0 0 1-6.34 9.28L12 12z" opacity=".7"/><path d="M12 12l-4.66 9.28A10 10 0 0 1 2 12h10z" opacity=".4"/></svg>
+                            Polar
+                        </button>
+                    </div>
+                    </div>
+                </div>
+                <div style="position: relative; height: 380px; padding: 10px 0;">
+                    <canvas id="categoryChartCanvas"></canvas>
+                </div>
+                <div id="categoryChartLegend" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #f3f4f6;"></div>
+            </div>
+
+            <!-- ===== PENDING vs RESOLVED CHART ===== -->
+            <div class="card" style="margin-bottom: 30px;" id="cardStatusChart">
+                <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
+                    <h3 class="card-title">✅ Pending vs Resolved by Category</h3>
+                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                        <button class="btn-print-chart" onclick="printChartCard('cardStatusChart','Pending vs Resolved by Category')" title="Print this chart">🖨️ Print Chart</button>
+                        <div class="chart-type-switcher" id="statusSwitcher">
+                        <button class="chart-type-btn active" onclick="switchStatusChart('groupedBar')" data-type="groupedBar" title="Grouped Bar">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="8" width="3" height="14"/><rect x="6" y="12" width="3" height="10"/><rect x="11" y="6" width="3" height="16"/><rect x="15" y="10" width="3" height="12"/><rect x="20" y="4" width="3" height="18"/></svg>
+                            Grouped
+                        </button>
+                        <button class="chart-type-btn" onclick="switchStatusChart('stackedBar')" data-type="stackedBar" title="Stacked Bar">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="14" width="4" height="8"/><rect x="2" y="8" width="4" height="6" opacity=".6"/><rect x="9" y="10" width="4" height="12"/><rect x="9" y="4" width="4" height="6" opacity=".6"/><rect x="16" y="12" width="4" height="10"/><rect x="16" y="8" width="4" height="4" opacity=".6"/></svg>
+                            Stacked
+                        </button>
+                        <button class="chart-type-btn" onclick="switchStatusChart('pie')" data-type="pie" title="Pie">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 1 10 10H12V2z"/><path d="M12 12L4.93 19.07A10 10 0 0 1 12 2v10z" opacity=".6"/><path d="M12 12v10a10 10 0 0 1-7.07-2.93L12 12z" opacity=".3"/></svg>
+                            Pie
+                        </button>
+                        <button class="chart-type-btn" onclick="switchStatusChart('doughnut')" data-type="doughnut" title="Doughnut">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>
+                            Donut
+                        </button>
+                        <button class="chart-type-btn" onclick="switchStatusChart('line')" data-type="line" title="Line Chart">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="2,18 7,10 12,14 17,6 22,8"/></svg>
+                            Line
+                        </button>
+                    </div>
+                    </div>
+                </div>
+                <div style="position: relative; height: 380px; padding: 10px 0;">
+                    <canvas id="statusChartCanvas"></canvas>
+                </div>
+                <div id="statusChartSummary" style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px; padding-top: 15px; border-top: 1px solid #f3f4f6;"></div>
+            </div>
+
+            <!-- Priority Distribution -->
+            <div class="card" style="margin-bottom: 30px;">
+                <div class="card-header">
+                    <h3 class="card-title">⚡ Priority Distribution</h3>
+                </div>
+                <div id="priorityChart"></div>
+            </div>
+
+            <!-- Top Locations -->
+            <div class="card" style="margin-bottom: 30px;">
+                <div class="card-header">
+                    <h3 class="card-title">📍 Top Issue Locations</h3>
+                </div>
+                <div id="locationHotspots"></div>
+            </div>
+
+            <!-- Trend Analysis -->
+            <div class="card" style="margin-bottom: 30px;" id="cardTrendChart">
+                <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <h3 class="card-title">📈 Monthly Trend Analysis</h3>
+                        <p style="color:#6b7280; font-size:0.88em; margin-top:4px;">Last 8 months — total reports submitted per month</p>
+                    </div>
+                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                        <button class="btn-print-chart" onclick="printChartCard('cardTrendChart','Monthly Trend Analysis')" title="Print this chart">🖨️ Print Chart</button>
+                        <div class="chart-type-switcher" id="trendSwitcher">
+                        <button class="chart-type-btn active" onclick="switchTrendChart('line')" data-type="line" title="Line">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="2,18 7,10 12,14 17,6 22,8"/></svg>
+                            Line
+                        </button>
+                        <button class="chart-type-btn" onclick="switchTrendChart('bar')" data-type="bar" title="Bar">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="10" width="4" height="12"/><rect x="9" y="6" width="4" height="16"/><rect x="16" y="2" width="4" height="20"/></svg>
+                            Bar
+                        </button>
+                        <button class="chart-type-btn" onclick="switchTrendChart('stackedBar')" data-type="stackedBar" title="Stacked Bar">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="14" width="4" height="8"/><rect x="2" y="8" width="4" height="6" opacity=".6"/><rect x="9" y="10" width="4" height="12"/><rect x="9" y="4" width="4" height="6" opacity=".6"/><rect x="16" y="12" width="4" height="10"/><rect x="16" y="8" width="4" height="4" opacity=".6"/></svg>
+                            Stacked
+                        </button>
+                        <button class="chart-type-btn" onclick="switchTrendChart('area')" data-type="area" title="Area">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,18 7,10 12,14 17,6 22,8"/><line x1="2" y1="22" x2="22" y2="22"/></svg>
+                            Area
+                        </button>
+                        <button class="chart-type-btn" onclick="switchTrendChart('radar')" data-type="radar" title="Radar">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/><polygon points="12,6 18,9.5 18,14.5 12,18 6,14.5 6,9.5" opacity=".5"/></svg>
+                            Radar
+                        </button>
+                        </div>
+                    </div>
+                </div>
+                <div style="position: relative; height: 400px; padding: 10px 0;">
+                    <canvas id="trendChartCanvas"></canvas>
+                </div>
+                <!-- Month summary cards -->
+                <div id="trendMonthlySummary" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap:10px; margin-top:20px; padding-top:16px; border-top:1px solid #f3f4f6;"></div>
+            </div>
+
+            <!-- ===== PRINT ALL REPORTS BY MONTH ===== -->
+            <div class="card" style="margin-bottom: 30px; border: 2px solid #8B1538;">
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title">🖨️ Print All Reports by Month</h3>
+                        <p style="color:#6b7280; font-size:0.88em; margin-top:4px;">Select a month to print a full report summary including all charts</p>
+                    </div>
+                </div>
+                <div style="display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; margin-bottom:20px;">
+                    <div>
+                        <label style="display:block; margin-bottom:6px; font-weight:600; color:#374151;">📅 Select Month</label>
+                        <select id="printMonthSelect" style="padding:10px 16px; border:2px solid #e5e7eb; border-radius:8px; font-size:14px; min-width:200px;">
+                            <option value="">-- Choose Month --</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="printMonthlyReport()" style="height:44px;">
+                        🖨️ Print Monthly Report
+                    </button>
+                    <button class="btn btn-secondary" onclick="printAllChartsReport()" style="height:44px;">
+                        📊 Print All Charts
+                    </button>
+                </div>
+                <div id="printMonthPreview" style="background:#f9fafb; border-radius:8px; padding:16px; min-height:60px; color:#6b7280; font-size:0.9em; border:1px dashed #d1d5db;">
+                    Select a month above to preview the report count before printing.
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Reports Tab -->
+        <div id="manage" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">⚙️ Manage Reports</h2>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="exportBtnManage" class="btn btn-success" onclick="exportToExcel()">
+                            <span>📊</span> Export to Excel
+                        </button>
+                    </div>
+                </div>
+                <p style="color: #6b7280; margin-bottom: 20px;">Update report status and response times</p>
+                <div id="manageReportsList"></div>
+            </div>
+        </div>
+
+        <!-- Manage Users Tab -->
+        <div id="users" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">👥 Manage Users</h2>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-secondary" onclick="displayUsersList()">
+                            <span>↻</span> Refresh
+                        </button>
+                    </div>
+                </div>
+                <p style="color: #6b7280; margin-bottom: 20px;">View and manage registered users</p>
+                <div id="usersList" class="users-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="lgu-script.js"></script>
+</body>
+</html>
