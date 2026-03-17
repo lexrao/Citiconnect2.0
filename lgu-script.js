@@ -1522,14 +1522,14 @@ window.switchStatusChart = switchStatusChart;
 window.switchTrendChart = switchTrendChart;
 
 // ===================================
-// Monthly Trend Analysis — 8 months
+// Monthly Trend Analysis — 12 months
 // ===================================
 
-// Build last-8-months labels based on current date
-function getLast8Months() {
+// Build last-12-months labels based on current date
+function getLast12Months() {
     const months = [];
     const now = new Date();
-    for (let i = 7; i >= 0; i--) {
+    for (let i = 11; i >= 0; i--) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
         months.push({
             label: d.toLocaleString('default', { month: 'short', year: '2-digit' }),
@@ -1542,7 +1542,7 @@ function getLast8Months() {
 
 // Build trend data from real reports only
 function buildTrendData() {
-    const months = getLast8Months();
+    const months = getLast12Months();
     const categories = Object.keys(CATEGORY_META);
 
     const data = {};
@@ -1776,7 +1776,7 @@ function populatePrintMonthSelect() {
     const select = document.getElementById('printMonthSelect');
     if (!select) return;
 
-    const months = getLast8Months();
+    const months = getLast12Months();
     select.innerHTML = '<option value="">-- Choose Month --</option>';
     months.forEach((m, i) => {
         const opt = document.createElement('option');
@@ -1893,7 +1893,7 @@ function printMonthlyReport() {
         return;
     }
     const idx = parseInt(select.value);
-    const months = getLast8Months();
+    const months = getLast12Months();
     const m = months[idx];
     const { data, totals, categories } = buildTrendData();
 
@@ -2058,7 +2058,7 @@ function printAllChartsReport() {
     const chartDefs = [
         { canvas: document.getElementById('categoryChartCanvas'), title: 'Reports by Category', legendId: 'categoryChartLegend' },
         { canvas: document.getElementById('statusChartCanvas'),   title: 'Pending vs Resolved by Category', legendId: 'statusChartSummary' },
-        { canvas: document.getElementById('trendChartCanvas'),    title: 'Monthly Trend Analysis (8 Months)', legendId: 'trendMonthlySummary' }
+        { canvas: document.getElementById('trendChartCanvas'),    title: 'Monthly Trend Analysis (12 Months)', legendId: 'trendMonthlySummary' }
     ];
 
     const chartSections = chartDefs.filter(c => c.canvas).map(c => {
