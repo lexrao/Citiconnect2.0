@@ -101,6 +101,29 @@
                     </div>
                 </div>
 
+                <!-- Proof Photos Upload -->
+                <div style="margin-top: 24px;">
+                    <label style="display:block; font-weight:600; color:#374151; margin-bottom:10px; font-size:0.95em;">
+                        📸 Proof Photos <span style="font-weight:400; color:#9ca3af; font-size:0.88em;">(Optional — max 5 photos, 5MB each)</span>
+                    </label>
+
+                    <!-- Drop Zone -->
+                    <div id="photoDropZone"
+                        ondragover="event.preventDefault(); this.style.borderColor='#8B1538'; this.style.background='#fef3e6';"
+                        ondragleave="this.style.borderColor='#d1d5db'; this.style.background='#fafafa';"
+                        ondrop="handlePhotoDrop(event)"
+                        onclick="document.getElementById('photoInput').click()"
+                        style="border:2px dashed #d1d5db; border-radius:12px; background:#fafafa; padding:28px 20px; text-align:center; cursor:pointer; transition:all 0.2s;">
+                        <div style="font-size:2em; margin-bottom:8px;">📷</div>
+                        <div style="font-weight:700; color:#374151; font-size:0.95em;">Drop photos here or click to upload</div>
+                        <div style="color:#9ca3af; font-size:0.82em; margin-top:4px;">Supports JPG, PNG, WEBP — up to 5MB per photo</div>
+                        <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoSelect(event)">
+                    </div>
+
+                    <!-- Photo Preview Grid -->
+                    <div id="photoPreviewGrid" style="display:none; flex-wrap:wrap; gap:10px; margin-top:12px;"></div>
+                </div>
+
                 <div style="margin-top: 30px;">
                     <button type="submit" class="btn btn-primary">
                         <span>✓</span> Submit Report
