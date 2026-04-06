@@ -472,11 +472,10 @@ function displayUsersList() {
                 <div class="user-actions">
                     <span class="badge-role badge-${user.role.toLowerCase().replace(/\s+/g,'-')}">${user.role}</span>
                     <small style="color:${statusColor};font-weight:600;">${statusLabel}</small>
-                    ${isAdmin() && user.username !== AuthState.currentUser ? `
+                    ${isAdmin() && user.username !== 'admin' ? `
                     <button class="btn btn-danger" style="padding:5px 12px;font-size:0.8em;margin-top:6px;" onclick="deleteUser('${user.username}')">
                         🗑️ Delete
-                    </button>` : isAdmin() && user.username === AuthState.currentUser ? `
-                    <small style="color:#9ca3af;font-size:0.75em;margin-top:6px;display:block;">🔒 Current user</small>` : ''}
+                    </button>` : ''}
                 </div>
             </div>`;
         }).join('');
@@ -602,22 +601,16 @@ function deleteUser(username) {
         alert('⛔ Access Denied\n\nOnly Administrators can delete users.');
         return;
     }
-    if (username === AuthState.currentUser) {
-        alert('⛔ You cannot delete your own account while logged in!');
+    if (username === 'admin') {
+        alert('Cannot delete the default admin account!');
         return;
     }
-    if (confirm('Are you sure you want to delete user: ' + username + '?\nThis action cannot be undone.')) {
+    if (confirm('Are you sure you want to delete user: ' + username + '?')) {
         AuthState.users = AuthState.users.filter(u => u.username !== username);
         saveUsers();
         updatePendingApprovalsBadge();
         displayUsersList();
-        // Toast
-        const toast = document.createElement('div');
-        toast.className = 'new-report-toast';
-        toast.style.borderLeftColor = '#ef4444';
-        toast.innerHTML = `🗑️ <span>User <strong>${username}</strong> has been deleted.</span>`;
-        document.body.appendChild(toast);
-        setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3500);
+        alert('User deleted successfully!');
     }
 }
 window.deleteUser = deleteUser;
@@ -635,68 +628,104 @@ const AppState = {
 };
 
 // ===================================
-// Firebase Configuration
-// ===================================
-const firebaseConfig = {
-    apiKey: "AIzaSyAFKNK3RkyNE2pMNTbHfIQnCi2pKlZo6L0",
-    authDomain: "citiconnect-66702.firebaseapp.com",
-    projectId: "citiconnect-66702",
-    storageBucket: "citiconnect-66702.firebasestorage.app",
-    messagingSenderId: "901952262667",
-    appId: "1:901952262667:web:18c8f477bbc9563d4e2d0e"
-};
-
-// Initialize Firebase (guard against double-init)
-if (!firebase.apps || !firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
-const db = firebase.firestore();
-
-// ===================================
-// Firebase Database Operations
+// IndexedDB Database Setup
 // ===================================
 function initDatabase() {
-    // Firestore needs no setup — just resolve immediately
-    AppState.db = db;
-    return Promise.resolve(db);
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open('CitizenReportingDB', 1);
+        
+        request.onerror = () => {
+            console.error('Database failed to open');
+            reject(request.error);
+        };
+        
+        request.onsuccess = () => {
+            AppState.db = request.result;
+            console.log('Database opened successfully');
+            resolve(AppState.db);
+        };
+        
+        request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            
+            if (!db.objectStoreNames.contains('reports')) {
+                const objectStore = db.createObjectStore('reports', { keyPath: 'id' });
+                objectStore.createIndex('status', 'status', { unique: false });
+                objectStore.createIndex('category', 'category', { unique: false });
+                objectStore.createIndex('priority', 'priority', { unique: false });
+                objectStore.createIndex('date', 'date', { unique: false });
+                console.log('Object store created');
+            }
+            
+            if (!db.objectStoreNames.contains('settings')) {
+                db.createObjectStore('settings', { keyPath: 'key' });
+            }
+        };
+    });
 }
 
+// ===================================
+// Database Operations
+// ===================================
 function loadReportsFromDB() {
-    return db.collection('reports')
-        .orderBy('date', 'desc')
-        .get()
-        .then(snapshot => {
-            const reports = snapshot.docs.map(doc => {
-                const data = doc.data();
-                return {
-                    ...data,
-                    date: data.date && data.date.toDate ? data.date.toDate() : new Date(data.date)
-                };
-            });
-            console.log(`Loaded ${reports.length} reports from Firestore`);
-            return reports;
-        });
+    return new Promise((resolve, reject) => {
+        const transaction = AppState.db.transaction(['reports'], 'readonly');
+        const objectStore = transaction.objectStore('reports');
+        const request = objectStore.getAll();
+        
+        request.onsuccess = () => {
+            const reports = request.result.map(report => ({
+                ...report,
+                date: new Date(report.date)
+            }));
+            console.log(`Loaded ${reports.length} reports from database`);
+            resolve(reports);
+        };
+        
+        request.onerror = () => {
+            console.error('Error loading reports');
+            reject(request.error);
+        };
+    });
 }
 
 function updateReportInDB(report) {
-    const reportToSave = {
-        ...report,
-        date: report.date instanceof Date
-            ? firebase.firestore.Timestamp.fromDate(report.date)
-            : report.date
-    };
-    // Remove undefined fields
-    Object.keys(reportToSave).forEach(k => reportToSave[k] === undefined && delete reportToSave[k]);
-    return db.collection('reports').doc(report.id).set(reportToSave, { merge: true })
-        .then(() => console.log('Report updated in Firestore'));
+    return new Promise((resolve, reject) => {
+        const transaction = AppState.db.transaction(['reports'], 'readwrite');
+        const objectStore = transaction.objectStore('reports');
+        
+        const reportToSave = {
+            ...report,
+            date: report.date.toISOString()
+        };
+        
+        const request = objectStore.put(reportToSave);
+        
+        request.onsuccess = () => {
+            console.log('Report updated in database');
+            resolve();
+        };
+        
+        request.onerror = () => {
+            console.error('Error updating report');
+            reject(request.error);
+        };
+    });
 }
 
 function deleteAllReportsFromDB() {
-    return db.collection('reports').get().then(snapshot => {
-        const batch = db.batch();
-        snapshot.docs.forEach(doc => batch.delete(doc.ref));
-        return batch.commit();
-    }).then(() => console.log('All reports deleted from Firestore'));
+    return new Promise((resolve, reject) => {
+        const transaction = AppState.db.transaction(['reports'], 'readwrite');
+        const objectStore = transaction.objectStore('reports');
+        const request = objectStore.clear();
+        
+        request.onsuccess = () => {
+            console.log('All reports deleted from database');
+            resolve();
+        };
+        
+        request.onerror = () => reject(request.error);
+    });
 }
 
 // ===================================
@@ -849,7 +878,7 @@ function showBadge(count) {
 function startAutoPoll() {
     if (RefreshState.pollInterval) clearInterval(RefreshState.pollInterval);
     RefreshState.pollInterval = setInterval(async () => {
-        if (!db) return;
+        if (!AppState.db) return;
         try {
             const fresh = await loadReportsFromDB();
             const newOnes = fresh.filter(r => !RefreshState.knownIds.has(r.id));
@@ -895,6 +924,9 @@ function switchTab(tabName) {
         case 'users':
             displayUsersList();
             updatePendingApprovalsBadge();
+            break;
+        case 'album':
+            renderAlbum();
             break;
     }
 }
@@ -1522,14 +1554,14 @@ window.switchStatusChart = switchStatusChart;
 window.switchTrendChart = switchTrendChart;
 
 // ===================================
-// Monthly Trend Analysis — 12 months
+// Monthly Trend Analysis — 8 months
 // ===================================
 
-// Build last-12-months labels based on current date
-function getLast12Months() {
+// Build last-8-months labels based on current date
+function getLast8Months() {
     const months = [];
     const now = new Date();
-    for (let i = 11; i >= 0; i--) {
+    for (let i = 7; i >= 0; i--) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
         months.push({
             label: d.toLocaleString('default', { month: 'short', year: '2-digit' }),
@@ -1542,7 +1574,7 @@ function getLast12Months() {
 
 // Build trend data from real reports only
 function buildTrendData() {
-    const months = getLast12Months();
+    const months = getLast8Months();
     const categories = Object.keys(CATEGORY_META);
 
     const data = {};
@@ -1776,7 +1808,7 @@ function populatePrintMonthSelect() {
     const select = document.getElementById('printMonthSelect');
     if (!select) return;
 
-    const months = getLast12Months();
+    const months = getLast8Months();
     select.innerHTML = '<option value="">-- Choose Month --</option>';
     months.forEach((m, i) => {
         const opt = document.createElement('option');
@@ -1893,7 +1925,7 @@ function printMonthlyReport() {
         return;
     }
     const idx = parseInt(select.value);
-    const months = getLast12Months();
+    const months = getLast8Months();
     const m = months[idx];
     const { data, totals, categories } = buildTrendData();
 
@@ -2058,7 +2090,7 @@ function printAllChartsReport() {
     const chartDefs = [
         { canvas: document.getElementById('categoryChartCanvas'), title: 'Reports by Category', legendId: 'categoryChartLegend' },
         { canvas: document.getElementById('statusChartCanvas'),   title: 'Pending vs Resolved by Category', legendId: 'statusChartSummary' },
-        { canvas: document.getElementById('trendChartCanvas'),    title: 'Monthly Trend Analysis (12 Months)', legendId: 'trendMonthlySummary' }
+        { canvas: document.getElementById('trendChartCanvas'),    title: 'Monthly Trend Analysis (8 Months)', legendId: 'trendMonthlySummary' }
     ];
 
     const chartSections = chartDefs.filter(c => c.canvas).map(c => {
@@ -2269,52 +2301,12 @@ function displayManageReports() {
                     <button class="btn btn-secondary" onclick="printReport('${report.id}')">
                         🖨️ Print
                     </button>
-                    ${isAdmin() ? `
-                    <button class="btn btn-danger" style="padding:8px 14px;font-size:0.85em;" onclick="deleteReport('${report.id}')">
-                        🗑️ Delete
-                    </button>` : ''}
                 </div>
             </div>
         </div>
     `;
     }).join('');
 }
-
-// ===================================
-// Delete Single Report (Admin Only)
-// ===================================
-async function deleteReport(reportId) {
-    if (!isAdmin()) {
-        alert('⛔ Access Denied\n\nOnly Administrators can delete reports.');
-        return;
-    }
-    if (!confirm(`Are you sure you want to delete report ${reportId}?\nThis action cannot be undone.`)) return;
-
-    try {
-        await db.collection('reports').doc(reportId).delete();
-        AppState.reports = AppState.reports.filter(r => r.id !== reportId);
-        RefreshState.knownIds.delete(reportId);
-
-        displayManageReports();
-        displayReports();
-        updateDashboard();
-        updateAnalytics();
-        updateHeaderStats();
-        if (AppState.lguMap) updateLGUMapMarkers();
-
-        // Toast
-        const toast = document.createElement('div');
-        toast.className = 'new-report-toast';
-        toast.style.borderLeftColor = '#ef4444';
-        toast.innerHTML = `🗑️ <span>Report <strong>${reportId}</strong> has been deleted.</span>`;
-        document.body.appendChild(toast);
-        setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3500);
-    } catch (error) {
-        console.error('Error deleting report:', error);
-        alert('Error deleting report. Please try again.');
-    }
-}
-window.deleteReport = deleteReport;
 
 // ===================================
 // NOTIFICATION SYSTEM
@@ -2828,14 +2820,14 @@ function viewReportDetails(reportId) {
     const statusColor = { 'Pending': '#f59e0b', 'In Progress': '#2563eb', 'Resolved': '#10b981' }[report.status] || '#6b7280';
     const priorityColor = { 'High': '#ef4444', 'Medium': '#f59e0b', 'Low': '#10b981' }[report.priority] || '#6b7280';
 
-    const photosHTML = (report.photos && report.photos.length > 0 && report.photos.some(p => p.url))
+    const photosHTML = (report.photos && report.photos.length > 0)
         ? `<div style="margin-top:20px;">
-               <div style="font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">📸 Proof Photos (${report.photos.filter(p=>p.url).length})</div>
+               <div style="font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">📸 Proof Photos (${report.photos.length})</div>
                <div style="display:flex;flex-wrap:wrap;gap:10px;">
-                   ${report.photos.filter(p => p.url).map((p, i) => `
+                   ${report.photos.map((p, i) => `
                        <div style="position:relative;width:110px;height:110px;border-radius:10px;overflow:hidden;border:2px solid #e5e7eb;cursor:pointer;flex-shrink:0;"
-                           onclick="lguOpenPhotoLightbox('${p.url.replace(/'/g, "\\'")}','${(p.name||'Photo '+(i+1)).replace(/'/g,"\\'")}')">
-                           <img src="${p.url}" alt="${p.name || 'Photo ' + (i+1)}"
+                           onclick="lguOpenPhotoLightbox('${p.dataUrl.replace(/'/g, "\\'")}','${(p.name||'Photo '+(i+1)).replace(/'/g,"\\'")}')">
+                           <img src="${p.dataUrl}" alt="${p.name || 'Photo ' + (i+1)}"
                                style="width:100%;height:100%;object-fit:cover;transition:transform 0.2s;"
                                onmouseover="this.style.transform='scale(1.05)'"
                                onmouseout="this.style.transform='scale(1)'">
@@ -3183,8 +3175,236 @@ function printReport(reportId) {
 }
 
 // ===================================
-// Export to Excel with Menu Options
+// PHOTO ALBUM
 // ===================================
+const AlbumState = { period: 'day' };
+
+function setAlbumPeriod(p) {
+    AlbumState.period = p;
+    ['day','week','month'].forEach(id => {
+        const btn = document.getElementById('albumPeriod' + id.charAt(0).toUpperCase() + id.slice(1));
+        if (!btn) return;
+        btn.style.background = p === id ? '#8B1538' : 'white';
+        btn.style.color      = p === id ? 'white'   : '#374151';
+    });
+    renderAlbum();
+}
+
+function getAlbumGroupKey(date, period) {
+    const d = date instanceof Date ? date : new Date(date);
+    if (period === 'day') {
+        return d.toLocaleDateString('en-PH', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    }
+    if (period === 'week') {
+        // ISO week start (Monday)
+        const day  = d.getDay(); // 0=Sun
+        const diff = (day === 0 ? -6 : 1) - day;
+        const mon  = new Date(d); mon.setDate(d.getDate() + diff); mon.setHours(0,0,0,0);
+        const sun  = new Date(mon); sun.setDate(mon.getDate() + 6);
+        const fmt  = dt => dt.toLocaleDateString('en-PH', { month:'short', day:'numeric' });
+        return `Week of ${fmt(mon)} – ${fmt(sun)}, ${sun.getFullYear()}`;
+    }
+    // month
+    return d.toLocaleDateString('en-PH', { year:'numeric', month:'long' });
+}
+
+function getAlbumGroupOrder(date, period) {
+    const d = date instanceof Date ? date : new Date(date);
+    if (period === 'day')   return -d.setHours(0,0,0,0);
+    if (period === 'week') {
+        const day = d.getDay();
+        const diff = (day === 0 ? -6 : 1) - day;
+        const mon = new Date(d); mon.setDate(d.getDate() + diff); mon.setHours(0,0,0,0);
+        return -mon.getTime();
+    }
+    return -(new Date(d.getFullYear(), d.getMonth(), 1).getTime());
+}
+
+function renderAlbum() {
+    const container  = document.getElementById('albumContainer');
+    const statsPill  = document.getElementById('albumStatsPill');
+    const catFilter  = (document.getElementById('albumCategoryFilter') || {}).value || '';
+    const period     = AlbumState.period;
+    if (!container) return;
+
+    // Collect all photos from all reports
+    const photoEntries = []; // { dataUrl, name, report, date }
+    AppState.reports.forEach(report => {
+        if (!report.photos || report.photos.length === 0) return;
+        if (catFilter && report.category !== catFilter) return;
+        const date = report.date instanceof Date ? report.date : new Date(report.date);
+        report.photos.forEach((p, pi) => {
+            photoEntries.push({ dataUrl: p.dataUrl, name: p.name || `Photo ${pi+1}`, report, date });
+        });
+    });
+
+    // Update stats pill
+    const reportCount = new Set(photoEntries.map(e => e.report.id)).size;
+    if (statsPill) statsPill.textContent = `📷 ${photoEntries.length} photo${photoEntries.length !== 1 ? 's' : ''} from ${reportCount} report${reportCount !== 1 ? 's' : ''}`;
+
+    if (photoEntries.length === 0) {
+        container.innerHTML = `
+        <div style="text-align:center;padding:60px 20px;color:#9ca3af;">
+            <div style="font-size:3.5em;margin-bottom:14px;">📭</div>
+            <div style="font-size:1.1em;font-weight:700;color:#6b7280;margin-bottom:8px;">No proof photos found</div>
+            <div style="font-size:0.88em;">${catFilter ? `No photos in the "${catFilter}" category.` : 'Citizens have not attached proof photos to any reports yet.'}</div>
+        </div>`;
+        return;
+    }
+
+    // Group by period
+    const groups = {};
+    const groupOrder = {};
+    photoEntries.forEach(e => {
+        const key = getAlbumGroupKey(e.date, period);
+        if (!groups[key]) { groups[key] = []; groupOrder[key] = getAlbumGroupOrder(e.date, period); }
+        groups[key].push(e);
+    });
+
+    // Sort groups newest first
+    const sortedKeys = Object.keys(groups).sort((a, b) => groupOrder[a] - groupOrder[b]);
+
+    const statusColors = { 'Pending': '#f59e0b', 'In Progress': '#3b82f6', 'Resolved': '#10b981' };
+    const catEmojis    = { 'Waste Management':'🗑️','Infrastructure Damage':'🏗️','Environmental Violation':'🌳','Public Safety':'🚨','Water & Sanitation':'💧','Street Lighting':'💡','Dog Issues':'🐕','Other':'📋' };
+
+    container.innerHTML = sortedKeys.map(key => {
+        const entries = groups[key];
+        const uniqueReports = [...new Map(entries.map(e => [e.report.id, e.report])).values()];
+
+        const photoCards = entries.map((e, idx) => {
+            const sc = statusColors[e.report.status] || '#6b7280';
+            const globalIdx = photoEntries.indexOf(e);
+            return `
+            <div style="border-radius:12px;overflow:hidden;background:white;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:1px solid #f3f4f6;cursor:pointer;transition:transform 0.18s,box-shadow 0.18s;"
+                onclick="openAlbumLightbox(${globalIdx})"
+                onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.15)'"
+                onmouseout="this.style.transform='';this.style.boxShadow='0 2px 8px rgba(0,0,0,0.08)'">
+                <div style="position:relative;aspect-ratio:4/3;overflow:hidden;background:#f3f4f6;">
+                    <img src="${e.dataUrl}" alt="${e.name}"
+                        style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s;"
+                        onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="position:absolute;top:8px;right:8px;background:${sc};color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">${e.report.status}</div>
+                    <div style="position:absolute;top:8px;left:8px;background:rgba(0,0,0,0.55);color:white;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;">${catEmojis[e.report.category] || '📋'}</div>
+                </div>
+                <div style="padding:10px 12px;">
+                    <div style="font-size:11px;font-weight:700;color:#8B1538;font-family:'Courier New',monospace;">${e.report.id}</div>
+                    <div style="font-size:11px;color:#6b7280;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.report.location}</div>
+                    <div style="font-size:10px;color:#9ca3af;margin-top:2px;">${e.date.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})}</div>
+                </div>
+            </div>`;
+        }).join('');
+
+        return `
+        <div style="margin-bottom:32px;">
+            <!-- Group header -->
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #f3f4f6;">
+                <div style="flex-shrink:0;width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#8B1538,#D4AF37);display:flex;align-items:center;justify-content:center;color:white;font-size:1em;">
+                    ${ period==='day' ? '📅' : period==='week' ? '📆' : '🗓️' }
+                </div>
+                <div>
+                    <div style="font-weight:800;color:#1f2937;font-size:1em;">${key}</div>
+                    <div style="font-size:12px;color:#9ca3af;margin-top:1px;">${entries.length} photo${entries.length!==1?'s':''} · ${uniqueReports.length} report${uniqueReports.length!==1?'s':''}</div>
+                </div>
+            </div>
+            <!-- Photo grid -->
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;">
+                ${photoCards}
+            </div>
+        </div>`;
+    }).join('');
+
+    // Store entries globally for lightbox navigation
+    window._albumEntries = photoEntries;
+}
+
+function openAlbumLightbox(idx) {
+    const entries = window._albumEntries || [];
+    if (!entries[idx]) return;
+
+    const existing = document.getElementById('albumLightbox');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'albumLightbox';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;';
+
+    function buildContent(i) {
+        const e = entries[i];
+        const sc = { 'Pending':'#f59e0b','In Progress':'#3b82f6','Resolved':'#10b981' }[e.report.status] || '#6b7280';
+        return `
+        <div style="position:relative;max-width:min(880px,90vw);width:100%;display:flex;flex-direction:column;align-items:center;gap:14px;">
+            <!-- Top bar -->
+            <div style="width:100%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span style="color:white;font-family:'Courier New',monospace;font-weight:800;font-size:1em;">${e.report.id}</span>
+                    <span style="background:${sc};color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;">${e.report.status}</span>
+                    <span style="background:rgba(255,255,255,0.15);color:white;font-size:11px;padding:3px 10px;border-radius:10px;">${e.report.category}</span>
+                </div>
+                <div style="color:rgba(255,255,255,0.5);font-size:12px;">${i+1} / ${entries.length}</div>
+            </div>
+            <!-- Image -->
+            <img src="${e.dataUrl}" alt="${e.name}"
+                style="max-width:100%;max-height:65vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.6);object-fit:contain;">
+            <!-- Bottom info -->
+            <div style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+                <div>
+                    <div style="color:white;font-weight:600;font-size:0.9em;">📍 ${e.report.location}</div>
+                    <div style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:2px;">👤 ${e.report.name} · ${e.date.toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</div>
+                </div>
+                <button onclick="viewReportDetails('${e.report.id}')"
+                    style="padding:8px 16px;border:2px solid rgba(255,255,255,0.3);border-radius:8px;background:transparent;color:white;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">
+                    📋 View Full Report
+                </button>
+            </div>
+        </div>`;
+    }
+
+    let current = idx;
+    function render() {
+        const prev = current > 0;
+        const next = current < entries.length - 1;
+        overlay.innerHTML = `
+        <!-- Close -->
+        <button onclick="document.getElementById('albumLightbox').remove()"
+            style="position:fixed;top:18px;right:18px;border:none;background:rgba(255,255,255,0.15);color:white;width:38px;height:38px;border-radius:50%;font-size:1.2em;cursor:pointer;z-index:2;">✕</button>
+        ${buildContent(current)}
+        <!-- Nav arrows -->
+        ${prev ? `<button onclick="albumLightboxNav(-1)"
+            style="position:fixed;left:14px;top:50%;transform:translateY(-50%);border:none;background:rgba(255,255,255,0.15);color:white;width:44px;height:44px;border-radius:50%;font-size:1.4em;cursor:pointer;">‹</button>` : ''}
+        ${next ? `<button onclick="albumLightboxNav(1)"
+            style="position:fixed;right:14px;top:50%;transform:translateY(-50%);border:none;background:rgba(255,255,255,0.15);color:white;width:44px;height:44px;border-radius:50%;font-size:1.4em;cursor:pointer;">›</button>` : ''}
+        <!-- Dot strip -->
+        <div style="display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;justify-content:center;max-width:400px;">
+            ${entries.map((_,di) => `<div style="width:${di===current?'18px':'7px'};height:7px;border-radius:4px;background:${di===current?'#D4AF37':'rgba(255,255,255,0.3)'};transition:all 0.2s;cursor:pointer;" onclick="albumLightboxJump(${di})"></div>`).join('')}
+        </div>`;
+    }
+
+    window.albumLightboxNav = function(dir) { current = Math.max(0, Math.min(entries.length-1, current+dir)); render(); };
+    window.albumLightboxJump = function(i) { current = i; render(); };
+
+    document.body.appendChild(overlay);
+    render();
+
+    // Keyboard nav
+    const keyHandler = e => {
+        if (e.key === 'ArrowLeft')  { albumLightboxNav(-1); }
+        if (e.key === 'ArrowRight') { albumLightboxNav(1); }
+        if (e.key === 'Escape')     { overlay.remove(); document.removeEventListener('keydown', keyHandler); }
+    };
+    document.addEventListener('keydown', keyHandler);
+    overlay.addEventListener('click', e => {
+        if (e.target === overlay) { overlay.remove(); document.removeEventListener('keydown', keyHandler); }
+    });
+}
+
+window.renderAlbum        = renderAlbum;
+window.setAlbumPeriod     = setAlbumPeriod;
+window.openAlbumLightbox  = openAlbumLightbox;
+window.albumLightboxNav   = albumLightboxNav || function(){};
+window.albumLightboxJump  = albumLightboxJump || function(){};
+
+
 function exportToExcel() {
     if (!isAdmin()) {
         alert('⛔ Access Denied\n\nOnly Administrators can export data.');
