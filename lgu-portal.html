@@ -45,9 +45,6 @@
             <div class="login-footer">
                 <p>Don't have an account? <a href="#" onclick="showRegisterForm(); return false;" class="link-primary">Register here</a></p>
                 <hr style="margin: 15px 0; opacity: 0.2;">
-                <p style="font-size: 0.85em; margin-bottom: 5px;">Default credentials for demo:</p>
-                <p style="font-size: 0.85em;"><strong>Username:</strong> admin | <strong>Password:</strong> admin123</p>
-                <hr style="margin: 15px 0; opacity: 0.2;">
                 <a href="citizen-portal.html" class="link-secondary">
                     👤 Go to Citizen Portal
                 </a>
@@ -186,6 +183,9 @@
                         <a href="citizen-portal.html" class="btn btn-secondary">
                             <span>👤</span> Citizen Portal
                         </a>
+                        <button onclick="openNotificationSettings()" class="btn btn-secondary" title="Notification Settings" style="background:linear-gradient(135deg,#8B1538,#b91c4e);color:white;border:none;">
+                            <span>🔔</span> Notifications
+                        </button>
                         <button onclick="logout()" class="btn btn-danger">
                             <span>🚪</span> Logout
                         </button>
@@ -211,9 +211,6 @@
             <button class="nav-tab" onclick="switchTab('users')" id="usersTab" style="position:relative;">
                 <span>👥</span> Manage Users
                 <span id="pendingApprovalsBadge" style="display:none;position:absolute;top:6px;right:8px;background:#ef4444;color:white;font-size:11px;font-weight:800;min-width:18px;height:18px;border-radius:9px;align-items:center;justify-content:center;padding:0 4px;animation:pulse-badge 1.5s infinite;">0</span>
-            </button>
-            <button class="nav-tab" onclick="switchTab('album')" id="albumTab">
-                <span>📸</span> Photo Album
             </button>
         </nav>
 
@@ -257,7 +254,6 @@
                         <option value="Public Safety">Public Safety</option>
                         <option value="Water & Sanitation">Water & Sanitation</option>
                         <option value="Street Lighting">Street Lighting</option>
-                        <option value="Dog Issues">Dog Issues</option>
                         <option value="Other">Other</option>
                     </select>
                     <select id="priorityFilter" onchange="displayReports()">
@@ -476,7 +472,7 @@
                 <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
                     <div>
                         <h3 class="card-title">📈 Monthly Trend Analysis</h3>
-                        <p style="color:#6b7280; font-size:0.88em; margin-top:4px;">Last 8 months — total reports submitted per month</p>
+                        <p style="color:#6b7280; font-size:0.88em; margin-top:4px;">Last 12 months — total reports submitted per month</p>
                     </div>
                     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
                         <button class="btn-print-chart" onclick="printChartCard('cardTrendChart','Monthly Trend Analysis')" title="Print this chart">🖨️ Print Chart</button>
@@ -555,52 +551,6 @@
             </div>
         </div>
 
-        <!-- Photo Album Tab -->
-        <div id="album" class="tab-content">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">📸 Proof Photo Album</h2>
-                    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-                        <button class="btn btn-secondary" onclick="renderAlbum()"><span>↻</span> Refresh</button>
-                    </div>
-                </div>
-                <p style="color:#6b7280;margin-bottom:20px;">Browse proof photos from citizen reports, grouped by date</p>
-
-                <!-- Filters -->
-                <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px;align-items:center;">
-                    <!-- Period toggle -->
-                    <div style="display:flex;border:2px solid #e5e7eb;border-radius:10px;overflow:hidden;flex-shrink:0;">
-                        <button id="albumPeriodDay" onclick="setAlbumPeriod('day')"
-                            style="padding:8px 18px;border:none;background:#8B1538;color:white;font-weight:700;font-size:13px;cursor:pointer;">Daily</button>
-                        <button id="albumPeriodWeek" onclick="setAlbumPeriod('week')"
-                            style="padding:8px 18px;border:none;background:white;color:#374151;font-weight:600;font-size:13px;cursor:pointer;">Weekly</button>
-                        <button id="albumPeriodMonth" onclick="setAlbumPeriod('month')"
-                            style="padding:8px 18px;border:none;background:white;color:#374151;font-weight:600;font-size:13px;cursor:pointer;">Monthly</button>
-                    </div>
-
-                    <!-- Category filter -->
-                    <select id="albumCategoryFilter" onchange="renderAlbum()"
-                        style="padding:9px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;outline:none;">
-                        <option value="">All Categories</option>
-                        <option value="Waste Management">🗑️ Waste Management</option>
-                        <option value="Infrastructure Damage">🏗️ Infrastructure Damage</option>
-                        <option value="Environmental Violation">🌳 Environmental Violation</option>
-                        <option value="Public Safety">🚨 Public Safety</option>
-                        <option value="Water & Sanitation">💧 Water & Sanitation</option>
-                        <option value="Street Lighting">💡 Street Lighting</option>
-                        <option value="Dog Issues">🐕 Dog Issues</option>
-                        <option value="Other">📋 Other</option>
-                    </select>
-
-                    <!-- Stats pill -->
-                    <div id="albumStatsPill" style="margin-left:auto;padding:7px 16px;background:#f3f4f6;border-radius:20px;font-size:13px;font-weight:600;color:#374151;white-space:nowrap;"></div>
-                </div>
-
-                <!-- Album grid container -->
-                <div id="albumContainer"></div>
-            </div>
-        </div>
-
         <!-- Manage Users Tab -->
         <div id="users" class="tab-content">
             <div class="card">
@@ -618,6 +568,8 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="lgu-script.js"></script>
