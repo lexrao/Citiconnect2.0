@@ -212,6 +212,9 @@
                 <span>👥</span> Manage Users
                 <span id="pendingApprovalsBadge" style="display:none;position:absolute;top:6px;right:8px;background:#ef4444;color:white;font-size:11px;font-weight:800;min-width:18px;height:18px;border-radius:9px;align-items:center;justify-content:center;padding:0 4px;animation:pulse-badge 1.5s infinite;">0</span>
             </button>
+            <button class="nav-tab" onclick="switchTab('album')">
+                <span>🖼️</span> Photo Album
+            </button>
         </nav>
 
         <!-- Staff Notice Banner -->
@@ -566,7 +569,76 @@
                 <div id="usersList" class="users-container"></div>
             </div>
         </div>
-    </div>
+        <!-- Photo Album Tab -->
+        <div id="album" class="tab-content">
+            <div class="card" style="padding:0;overflow:hidden;">
+
+                <!-- Album Header -->
+                <div style="background:linear-gradient(135deg,#1f2937,#374151);padding:24px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+                    <div style="display:flex;align-items:center;gap:14px;">
+                        <div style="width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:1.6em;">🖼️</div>
+                        <div>
+                            <h2 style="color:white;font-size:1.25em;font-weight:800;margin:0;">Proof Photo Album</h2>
+                            <p style="color:rgba(255,255,255,0.6);font-size:0.83em;margin:4px 0 0;">All reported photos categorized by issue type</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <span id="albumPhotoCount" style="background:rgba(255,255,255,0.15);color:white;padding:5px 14px;border-radius:20px;font-size:0.83em;font-weight:700;">0 photos</span>
+                        <button onclick="refreshAlbum()" style="padding:8px 18px;background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);border-radius:8px;font-size:0.85em;font-weight:600;cursor:pointer;transition:all 0.2s;"
+                            onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+                            ↻ Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters Bar -->
+                <div style="padding:18px 24px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
+
+                    <!-- Sort by Time -->
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <span style="font-size:0.82em;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;">Sort:</span>
+                        <div style="display:flex;border:1.5px solid #e5e7eb;border-radius:8px;overflow:hidden;background:white;">
+                            <button id="albumSortDay" onclick="setAlbumSort('day')"
+                                style="padding:7px 16px;border:none;background:#8B1538;color:white;font-size:0.82em;font-weight:700;cursor:pointer;">Day</button>
+                            <button id="albumSortWeek" onclick="setAlbumSort('week')"
+                                style="padding:7px 16px;border:none;background:white;color:#374151;font-size:0.82em;font-weight:600;cursor:pointer;border-left:1px solid #e5e7eb;">Week</button>
+                            <button id="albumSortMonth" onclick="setAlbumSort('month')"
+                                style="padding:7px 16px;border:none;background:white;color:#374151;font-size:0.82em;font-weight:600;cursor:pointer;border-left:1px solid #e5e7eb;">Month</button>
+                        </div>
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <span style="font-size:0.82em;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;">Category:</span>
+                        <select id="albumCategoryFilter" onchange="renderAlbum()"
+                            style="padding:7px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:0.85em;font-weight:600;color:#374151;background:white;outline:none;cursor:pointer;">
+                            <option value="">All Categories</option>
+                            <option value="Waste Management">🗑️ Waste Management</option>
+                            <option value="Infrastructure Damage">🏗️ Infrastructure Damage</option>
+                            <option value="Environmental Violation">🌿 Environmental Violation</option>
+                            <option value="Public Safety">🚨 Public Safety</option>
+                            <option value="Water & Sanitation">💧 Water & Sanitation</option>
+                            <option value="Street Lighting">💡 Street Lighting</option>
+                            <option value="Other">📌 Other</option>
+                        </select>
+                    </div>
+
+                    <!-- Search -->
+                    <div style="flex:1;min-width:180px;position:relative;">
+                        <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:0.9em;">🔍</span>
+                        <input id="albumSearch" type="text" placeholder="Search by location or report ID…"
+                            oninput="renderAlbum()"
+                            style="width:100%;padding:7px 10px 7px 30px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:0.85em;outline:none;box-sizing:border-box;"
+                            onfocus="this.style.borderColor='#8B1538'" onblur="this.style.borderColor='#e5e7eb'">
+                    </div>
+                </div>
+
+                <!-- Album Grid -->
+                <div id="albumContent" style="padding:24px 20px;min-height:300px;"></div>
+            </div>
+        </div>
+
+    </div><!-- end main-container -->
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
