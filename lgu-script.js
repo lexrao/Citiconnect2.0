@@ -896,6 +896,9 @@ function switchTab(tabName) {
             displayUsersList();
             updatePendingApprovalsBadge();
             break;
+        case 'album':
+            refreshAlbum();
+            break;
     }
 }
 
@@ -3594,3 +3597,205 @@ document.addEventListener('DOMContentLoaded', function() {
         registerForm.addEventListener('submit', handleRegister);
     }
 });
+
+// ===================================
+// PHOTO ALBUM
+// ===================================
+const AlbumState = {
+    sort: 'day',   // 'day' | 'week' | 'month'
+    photos: []     // flat array of { url, name, reportId, category, location, date }
+};
+
+const CATEGORY_ICONS = {
+    'Waste Management':       '🗑️',
+    'Infrastructure Damage':  '🏗️',
+    'Environmental Violation':'🌿',
+    'Public Safety':          '🚨',
+    'Water & Sanitation':     '💧',
+    'Street Lighting':        '💡',
+    'Other':                  '📌'
+};
+
+const CATEGORY_COLORS = {
+    'Waste Management':       { bg:'#fef3c7', border:'#f59e0b', text:'#92400e' },
+    'Infrastructure Damage':  { bg:'#fee2e2', border:'#ef4444', text:'#991b1b' },
+    'Environmental Violation':{ bg:'#d1fae5', border:'#10b981', text:'#065f46' },
+    'Public Safety':          { bg:'#fce7f3', border:'#ec4899', text:'#9d174d' },
+    'Water & Sanitation':     { bg:'#dbeafe', border:'#2563eb', text:'#1e3a8a' },
+    'Street Lighting':        { bg:'#fef9c3', border:'#eab308', text:'#713f12' },
+    'Other':                  { bg:'#f3f4f6', border:'#9ca3af', text:'#374151' }
+};
+
+function refreshAlbum() {
+    AlbumState.photos = [];
+    const reports = AppState.reports || [];
+    reports.forEach(r => {
+        if (r.photos && r.photos.length > 0) {
+            r.photos.forEach(p => {
+                if (p.url) {
+                    AlbumState.photos.push({
+                        url:      p.url,
+                        name:     p.name || 'Photo',
+                        reportId: r.id,
+                        category: r.category || 'Other',
+                        location: r.location || '',
+                        date:     r.date instanceof Date ? r.date : new Date(r.date)
+                    });
+                }
+            });
+        }
+    });
+
+    // Update count badge
+    const countEl = document.getElementById('albumPhotoCount');
+    if (countEl) countEl.textContent = `${AlbumState.photos.length} photo${AlbumState.photos.length !== 1 ? 's' : ''}`;
+
+    renderAlbum();
+}
+
+function setAlbumSort(sort) {
+    AlbumState.sort = sort;
+    // Update button styles
+    ['day','week','month'].forEach(s => {
+        const btn = document.getElementById(`albumSort${s.charAt(0).toUpperCase()+s.slice(1)}`);
+        if (!btn) return;
+        if (s === sort) {
+            btn.style.background = '#8B1538';
+            btn.style.color = 'white';
+        } else {
+            btn.style.background = 'white';
+            btn.style.color = '#374151';
+        }
+    });
+    renderAlbum();
+}
+
+function getAlbumGroupKey(date, sort) {
+    if (!(date instanceof Date) || isNaN(date)) return 'Unknown Date';
+    if (sort === 'day') {
+        return date.toLocaleDateString('en-PH', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    }
+    if (sort === 'week') {
+        const d = new Date(date);
+        const day = d.getDay();
+        const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+        const mon = new Date(d.setDate(diff));
+        const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+        return `Week of ${mon.toLocaleDateString('en-PH', { month:'short', day:'numeric' })} – ${sun.toLocaleDateString('en-PH', { month:'short', day:'numeric', year:'numeric' })}`;
+    }
+    if (sort === 'month') {
+        return date.toLocaleDateString('en-PH', { month:'long', year:'numeric' });
+    }
+    return '';
+}
+
+function renderAlbum() {
+    const container = document.getElementById('albumContent');
+    if (!container) return;
+
+    const catFilter  = (document.getElementById('albumCategoryFilter')?.value || '').toLowerCase();
+    const searchVal  = (document.getElementById('albumSearch')?.value || '').toLowerCase();
+
+    let photos = AlbumState.photos.filter(p => {
+        const matchCat  = !catFilter  || p.category.toLowerCase() === catFilter;
+        const matchSearch = !searchVal || p.reportId.toLowerCase().includes(searchVal) || p.location.toLowerCase().includes(searchVal);
+        return matchCat && matchSearch;
+    });
+
+    if (photos.length === 0) {
+        container.innerHTML = `
+        <div style="text-align:center;padding:60px 20px;color:#9ca3af;">
+            <div style="font-size:3em;margin-bottom:12px;">📭</div>
+            <div style="font-weight:700;font-size:1.05em;color:#6b7280;margin-bottom:6px;">No Photos Found</div>
+            <div style="font-size:0.88em;">No proof photos match your current filters.</div>
+        </div>`;
+        return;
+    }
+
+    // Sort photos newest first
+    photos.sort((a, b) => b.date - a.date);
+
+    // Group by time period
+    const groups = {};
+    photos.forEach(p => {
+        const key = getAlbumGroupKey(p.date, AlbumState.sort);
+        if (!groups[key]) groups[key] = {};
+        const cat = p.category || 'Other';
+        if (!groups[key][cat]) groups[key][cat] = [];
+        groups[key][cat].push(p);
+    });
+
+    let html = '';
+    Object.entries(groups).forEach(([period, cats]) => {
+        const totalInPeriod = Object.values(cats).reduce((s, arr) => s + arr.length, 0);
+        html += `
+        <div style="margin-bottom:36px;">
+            <!-- Period Header -->
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+                <div style="flex:1;height:2px;background:linear-gradient(to right,#8B1538,transparent);"></div>
+                <div style="background:linear-gradient(135deg,#8B1538,#b91c4e);color:white;padding:6px 18px;border-radius:20px;font-size:0.83em;font-weight:800;white-space:nowrap;">
+                    📅 ${period} <span style="opacity:0.75;font-weight:600;">(${totalInPeriod} photo${totalInPeriod!==1?'s':''})</span>
+                </div>
+                <div style="flex:1;height:2px;background:linear-gradient(to left,#8B1538,transparent);"></div>
+            </div>`;
+
+        // Within each period, group by category
+        Object.entries(cats).forEach(([cat, catPhotos]) => {
+            const colors = CATEGORY_COLORS[cat] || CATEGORY_COLORS['Other'];
+            const icon   = CATEGORY_ICONS[cat] || '📌';
+            html += `
+            <div style="margin-bottom:22px;border:1.5px solid ${colors.border}33;border-radius:14px;overflow:hidden;">
+                <!-- Category Header -->
+                <div style="background:${colors.bg};padding:12px 18px;display:flex;align-items:center;gap:10px;border-bottom:1.5px solid ${colors.border}33;">
+                    <span style="font-size:1.2em;">${icon}</span>
+                    <span style="font-weight:800;color:${colors.text};font-size:0.93em;">${cat}</span>
+                    <span style="background:${colors.border};color:white;padding:2px 10px;border-radius:12px;font-size:0.75em;font-weight:700;margin-left:auto;">${catPhotos.length} photo${catPhotos.length!==1?'s':''}</span>
+                </div>
+
+                <!-- Photo Grid -->
+                <div style="padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;background:white;">
+                    ${catPhotos.map(p => `
+                    <div onclick="albumOpenLightbox('${p.url.replace(/'/g,"\\'")}')"
+                        style="border-radius:10px;overflow:hidden;cursor:pointer;position:relative;aspect-ratio:1;background:#f3f4f6;border:2px solid #e5e7eb;transition:all 0.2s;"
+                        onmouseover="this.style.transform='scale(1.03)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.15)';this.style.borderColor='${colors.border}'"
+                        onmouseout="this.style.transform='';this.style.boxShadow='';this.style.borderColor='#e5e7eb'">
+                        <img src="${p.url}" alt="${p.name}"
+                            style="width:100%;height:100%;object-fit:cover;display:block;"
+                            onerror="this.parentElement.style.display='none'">
+                        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.75));padding:8px 8px 6px;color:white;">
+                            <div style="font-size:10px;font-weight:700;font-family:monospace;letter-spacing:.3px;">${p.reportId}</div>
+                            <div style="font-size:9px;opacity:0.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">📍 ${p.location || '—'}</div>
+                        </div>
+                        <div style="position:absolute;top:7px;right:7px;background:rgba(0,0,0,0.5);border-radius:6px;padding:3px 6px;font-size:9px;color:white;font-weight:600;">🔍</div>
+                    </div>`).join('')}
+                </div>
+            </div>`;
+        });
+
+        html += `</div>`;
+    });
+
+    container.innerHTML = html;
+}
+
+// Album Lightbox
+function albumOpenLightbox(url) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;';
+    overlay.onclick = () => document.body.removeChild(overlay);
+    overlay.innerHTML = `
+    <div style="position:relative;max-width:90vw;max-height:90vh;">
+        <img src="${url}" style="max-width:100%;max-height:90vh;border-radius:12px;object-fit:contain;box-shadow:0 24px 80px rgba(0,0,0,0.6);">
+        <button onclick="event.stopPropagation();document.body.removeChild(this.closest('[style*=fixed]'))"
+            style="position:absolute;top:-14px;right:-14px;width:36px;height:36px;background:#ef4444;color:white;border:none;border-radius:50%;font-size:1.1em;cursor:pointer;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);">✕</button>
+        <a href="${url}" download target="_blank"
+            style="position:absolute;bottom:-14px;right:-14px;width:36px;height:36px;background:#10b981;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:1em;box-shadow:0 4px 12px rgba(0,0,0,0.4);"
+            onclick="event.stopPropagation()" title="Download photo">⬇️</a>
+    </div>`;
+    document.body.appendChild(overlay);
+}
+
+window.refreshAlbum  = refreshAlbum;
+window.setAlbumSort  = setAlbumSort;
+window.renderAlbum   = renderAlbum;
+window.albumOpenLightbox = albumOpenLightbox;
