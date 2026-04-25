@@ -740,15 +740,6 @@ function updateHeaderStats() {
     document.getElementById('headerTotalReports').textContent = total;
     document.getElementById('headerActiveReports').textContent = active;
     document.getElementById('headerResolvedReports').textContent = resolved;
-    // Sync mobile stats
-    const mob = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
-    mob('headerTotalReportsMobile', total);
-    mob('headerActiveReportsMobile', active);
-    mob('headerResolvedReportsMobile', resolved);
-    // Sync mobile user/role
-    const uEl = document.getElementById('currentUserMobile');
-    const uDesktop = document.getElementById('currentUser');
-    if (uEl && uDesktop) uEl.textContent = uDesktop.textContent;
 }
 
 // ===================================
