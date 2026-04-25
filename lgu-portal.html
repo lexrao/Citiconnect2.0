@@ -140,6 +140,7 @@
         <!-- Header -->
         <header>
             <div class="header-content">
+                <!-- Logo + Title -->
                 <div class="header-title">
                     <div style="display:flex;align-items:center;gap:14px;">
                         <img src="logo.png" alt="Barangay Danao Logo" class="header-logo" onerror="this.style.display='none'">
@@ -150,8 +151,8 @@
                     </div>
                 </div>
 
-                <!-- Desktop Header Actions -->
-                <div class="header-actions desktop-header-actions">
+                <!-- Header Right: Stats + Buttons -->
+                <div class="header-actions">
                     <div class="header-stats">
                         <div class="header-stat">
                             <div class="header-stat-value" id="headerTotalReports">0</div>
@@ -166,60 +167,30 @@
                             <div class="header-stat-label">Resolved</div>
                         </div>
                     </div>
-                    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                    <div class="header-btns">
                         <div id="newReportsBadgeWrap" style="display:none;position:relative;">
                             <span id="newReportsBadge" style="position:absolute;top:-6px;right:-6px;background:#ef4444;color:white;font-size:11px;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px;z-index:10;animation:pulse-badge 1.5s infinite;">0</span>
                             <button onclick="refreshReports()" id="refreshBtn" class="btn btn-refresh">
-                                <span id="refreshIcon">↻</span> Refresh
+                                <span id="refreshIcon">↻</span> <span class="btn-label">Refresh</span>
                             </button>
                         </div>
                         <button onclick="refreshReports()" id="refreshBtnPlain" class="btn btn-refresh">
-                            <span id="refreshIconPlain">↻</span> Refresh
+                            <span id="refreshIconPlain">↻</span> <span class="btn-label">Refresh</span>
                         </button>
                         <div class="user-badge"><span>👤</span><span id="currentUser">Admin</span></div>
-                        <span id="roleBadge" style="background:#8B1538;color:white;padding:3px 12px;border-radius:12px;font-size:0.8em;font-weight:600;">🔑 Administrator</span>
-                        <a href="citizen-portal.html" class="btn btn-secondary"><span>👤</span> Citizen Portal</a>
-                        <button onclick="openNotificationSettings()" class="btn btn-secondary" style="background:linear-gradient(135deg,#8B1538,#b91c4e);color:white;border:none;">
-                            <span>🔔</span> Notifications
+                        <span id="roleBadge" style="background:#8B1538;color:white;padding:3px 10px;border-radius:12px;font-size:0.78em;font-weight:600;" class="role-badge-desktop">🔑 Administrator</span>
+                        <a href="citizen-portal.html" class="btn btn-secondary citizen-btn"><span>👤</span> <span class="btn-label">Citizen Portal</span></a>
+                        <button onclick="openNotificationSettings()" class="btn notif-btn" style="background:linear-gradient(135deg,#8B1538,#b91c4e);color:white;border:none;">
+                            <span>🔔</span> <span class="btn-label">Notifications</span>
                         </button>
-                        <button onclick="logout()" class="btn btn-danger"><span>🚪</span> Logout</button>
-                    </div>
-                </div>
-
-                <!-- Mobile Header Row -->
-                <div class="mobile-header-row">
-                    <!-- Stats row -->
-                    <div class="mobile-stats-row">
-                        <div class="mobile-stat">
-                            <div class="mobile-stat-value" id="headerTotalReportsMobile">0</div>
-                            <div class="mobile-stat-label">Total</div>
-                        </div>
-                        <div class="mobile-stat">
-                            <div class="mobile-stat-value" id="headerActiveReportsMobile">0</div>
-                            <div class="mobile-stat-label">Active</div>
-                        </div>
-                        <div class="mobile-stat">
-                            <div class="mobile-stat-value" id="headerResolvedReportsMobile">0</div>
-                            <div class="mobile-stat-label">Resolved</div>
-                        </div>
-                    </div>
-                    <!-- Mobile action buttons -->
-                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px;">
-                        <button onclick="refreshReports()" class="btn btn-refresh" style="flex:1;min-width:80px;">↻ Refresh</button>
-                        <button onclick="openNotificationSettings()" style="flex:1;min-width:80px;padding:8px 10px;background:linear-gradient(135deg,#8B1538,#b91c4e);color:white;border:none;border-radius:8px;font-size:0.82em;font-weight:700;cursor:pointer;">🔔 Alerts</button>
-                        <button onclick="logout()" class="btn btn-danger" style="flex:1;min-width:80px;">🚪 Logout</button>
-                    </div>
-                    <div style="display:flex;gap:8px;margin-top:8px;align-items:center;">
-                        <div style="background:rgba(255,255,255,0.2);color:white;padding:4px 12px;border-radius:10px;font-size:0.78em;font-weight:600;">👤 <span id="currentUserMobile">Admin</span></div>
-                        <span id="roleBadgeMobile" style="background:#8B1538;color:white;padding:4px 12px;border-radius:10px;font-size:0.75em;font-weight:600;">🔑 Administrator</span>
-                        <a href="citizen-portal.html" style="color:white;font-size:0.78em;font-weight:600;text-decoration:none;padding:4px 10px;background:rgba(255,255,255,0.15);border-radius:10px;">👤 Citizen</a>
+                        <button onclick="logout()" class="btn btn-danger"><span>🚪</span> <span class="btn-label">Logout</span></button>
                     </div>
                 </div>
             </div>
         </header>
 
         <!-- Navigation -->
-        <nav class="nav-tabs" id="mainNav">
+        <nav class="nav-tabs">
             <button class="nav-tab active" onclick="switchTab('track')">
                 <span>📍</span><span class="nav-label"> Track Reports</span>
             </button>
