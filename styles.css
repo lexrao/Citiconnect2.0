@@ -689,60 +689,128 @@ textarea {
     }
 }
 
+/* ===================================
+   MOBILE RESPONSIVE — Desktop/Tablet
+   =================================== */
+.mobile-header-row  { display: none; }
+.desktop-header-actions { display: flex; }
+
 @media (max-width: 768px) {
-    body {
-        padding: 10px;
+    body { padding: 0; }
+
+    /* Hide desktop header actions, show mobile row */
+    .desktop-header-actions { display: none !important; }
+    .mobile-header-row {
+        display: block;
+        width: 100%;
+        margin-top: 14px;
     }
 
-    header {
-        padding: 20px;
+    .mobile-stats-row {
+        display: flex;
+        gap: 0;
+        background: rgba(255,255,255,0.12);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .mobile-stat {
+        flex: 1;
+        text-align: center;
+        padding: 10px 6px;
+        border-right: 1px solid rgba(255,255,255,0.15);
+    }
+    .mobile-stat:last-child { border-right: none; }
+    .mobile-stat-value {
+        font-size: 1.4em;
+        font-weight: 800;
+        color: white;
+        line-height: 1;
+    }
+    .mobile-stat-label {
+        font-size: 0.65em;
+        color: rgba(255,255,255,0.7);
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        margin-top: 3px;
     }
 
-    .header-title h1 {
-        font-size: 1.75em;
-    }
+    /* Header */
+    header { padding: 16px 14px; }
+    .header-title h1 { font-size: 1.3em; }
+    .header-logo { width: 42px; height: 42px; }
+    .subtitle { font-size: 0.78em; }
 
+    /* Nav tabs — horizontal scroll on mobile */
     .nav-tabs {
-        flex-direction: column;
-        padding: 15px;
+        display: flex;
+        flex-direction: row !important;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 0;
+        gap: 0;
+        border-bottom: 2px solid #e5e7eb;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
     }
-
+    .nav-tabs::-webkit-scrollbar { display: none; }
     .nav-tab {
-        width: 100%;
+        flex-shrink: 0;
+        padding: 12px 14px;
+        font-size: 0.78em;
+        border-radius: 0;
+        border-bottom: 3px solid transparent;
+        white-space: nowrap;
+        min-width: unset;
+        width: auto !important;
     }
+    .nav-tab.active {
+        border-bottom: 3px solid #8B1538;
+        background: #fff5f7;
+        color: #8B1538;
+    }
+    .nav-label { display: inline; }
 
-    .card {
-        padding: 20px;
-    }
+    /* Cards */
+    .card { padding: 14px; border-radius: 10px; margin-bottom: 12px; }
+    .card-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+    .card-title { font-size: 1em; }
 
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
+    /* Filters */
+    .filter-section { flex-direction: column; gap: 8px; }
+    .filter-section select,
+    .filter-section input { width: 100%; box-sizing: border-box; }
 
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
+    /* Stats grid */
+    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stat-card { padding: 14px; }
+    .stat-value { font-size: 1.6em; }
 
-    .filter-section {
-        flex-direction: column;
-    }
+    /* Form grid */
+    .form-grid { grid-template-columns: 1fr; }
 
-    .filter-section select, .filter-section input {
-        width: 100%;
-    }
+    /* Map */
+    .map-container { height: 280px; }
 
-    .map-container {
-        height: 350px;
-    }
+    /* Report cards */
+    .report-header,
+    .manage-report-header { flex-direction: column; gap: 8px; }
+    .report-badges { justify-content: flex-start; flex-wrap: wrap; }
+    .report-actions { flex-wrap: wrap; gap: 6px; }
+    .report-actions button { font-size: 0.78em; padding: 6px 10px; }
 
-    .report-header, .manage-report-header {
-        flex-direction: column;
-        gap: 10px;
-    }
+    /* Main container */
+    .container { padding: 0 0 20px; }
+    .tab-content { padding: 12px; }
+    .tab-content.active { padding: 10px; }
+}
 
-    .report-badges {
-        justify-content: flex-start;
-    }
+@media (max-width: 480px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .header-title h1 { font-size: 1.1em; }
+    .nav-tab { padding: 10px 11px; font-size: 0.74em; }
+    .card { padding: 12px; }
+    .stat-value { font-size: 1.4em; }
+    .btn { font-size: 0.82em; padding: 8px 12px; }
 }
 /* Login Screen Styles */
 .login-container {
