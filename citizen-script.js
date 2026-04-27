@@ -487,12 +487,20 @@ async function handleReportSubmit(e) {
     
     AppState.reportCounter++;
     
+    let dbSaveSuccess = true;
     try {
         await saveReportToDB(formData);
         await saveCounterToDB(AppState.reportCounter);
         console.log('Report saved to database');
     } catch (error) {
         console.error('Error saving to database:', error);
+        dbSaveSuccess = false;
+        showAlert('submitAlert', 'error',
+            '❌ Failed to submit your report.\n\n' +
+            'The system could not connect to the database. Please try again in a few moments, ' +
+            'or contact the Barangay office directly.\n\nError: ' + (error.message || error)
+        );
+        return; // Stop — don't show success message or reset the form
     }
     
     let successMessage = `✅ Report submitted successfully!\n\nYour reference ID is: ${formData.id}`;
