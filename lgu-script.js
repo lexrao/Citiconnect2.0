@@ -413,7 +413,7 @@ function displayUsersList() {
         html += `
         <div style="margin-bottom:28px;">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-                <h3 style="color:#8B1538;font-size:1.1em;font-weight:700;">⏳ Pending Approvals</h3>
+                <h3 style="color:#8B1538;font-size:1.1em;font-weight:700;"> Pending Approvals</h3>
                 <span style="background:#fee2e2;color:#8B1538;padding:3px 12px;border-radius:12px;font-size:12px;font-weight:700;">${pendingUsers.length} awaiting</span>
             </div>
             ${pendingUsers.map(user => `
@@ -422,7 +422,7 @@ function displayUsersList() {
                 <div class="user-info">
                     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                         <div class="user-name">${user.fullName}</div>
-                        <span style="background:#fef3c7;color:#d97706;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:700;letter-spacing:.3px;">⏳ PENDING</span>
+                        <span style="background:#fef3c7;color:#d97706;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:700;letter-spacing:.3px;"> PENDING</span>
                     </div>
                     <div class="user-username">@${user.username}</div>
                     <div class="user-meta">
@@ -929,7 +929,7 @@ function displayReports() {
     if (filteredReports.length === 0) {
         reportsList.innerHTML = `
             <div class="empty-state">
-                <div class="empty-state-icon">📋</div>
+                <div class="empty-state-icon"></div>
                 <h3>No reports found</h3>
                 <p>Try adjusting your filters or check back later</p>
             </div>
@@ -1422,9 +1422,9 @@ function renderStatusChart(type) {
             data: {
                 labels,
                 datasets: [
-                    { label: '🕐 Pending',     data: pendingData,  backgroundColor: '#f59e0b', borderColor: '#f59e0b', borderWidth: 2, borderRadius: 4 },
-                    { label: '🔄 In Progress', data: inProgData,   backgroundColor: '#2563eb', borderColor: '#2563eb', borderWidth: 2, borderRadius: 4 },
-                    { label: '✅ Resolved',    data: resolvedData, backgroundColor: '#10b981', borderColor: '#10b981', borderWidth: 2, borderRadius: 4 }
+                    { label: ' Pending',     data: pendingData,  backgroundColor: '#f59e0b', borderColor: '#f59e0b', borderWidth: 2, borderRadius: 4 },
+                    { label: ' In Progress', data: inProgData,   backgroundColor: '#2563eb', borderColor: '#2563eb', borderWidth: 2, borderRadius: 4 },
+                    { label: ' Resolved',    data: resolvedData, backgroundColor: '#10b981', borderColor: '#10b981', borderWidth: 2, borderRadius: 4 }
                 ]
             },
             options: { ...baseOpts, scales: {
@@ -1766,7 +1766,7 @@ function renderTrendChart(type) {
             return `<div style="text-align:center; padding:10px 8px; border-radius:10px; background:${isPeak ? 'linear-gradient(135deg,#8B1538,#D4AF37)' : '#f9fafb'}; border:1px solid ${isPeak ? 'transparent' : '#e5e7eb'};">
                 <div style="font-size:0.78em; font-weight:600; color:${isPeak ? 'rgba(255,255,255,0.85)' : '#6b7280'}; text-transform:uppercase; letter-spacing:.5px;">${m.label}</div>
                 <div style="font-size:1.6em; font-weight:700; color:${isPeak ? '#fff' : '#1f2937'}; line-height:1.2; margin:4px 0;">${totals[i]}</div>
-                <div style="font-size:0.72em; color:${isPeak ? 'rgba(255,255,255,0.75)' : '#9ca3af'};">${isPeak ? '🏆 Peak' : 'reports'}</div>
+                <div style="font-size:0.72em; color:${isPeak ? 'rgba(255,255,255,0.75)' : '#9ca3af'};">${isPeak ? ' Peak' : 'reports'}</div>
             </div>`;
         }).join('');
     }
@@ -2505,7 +2505,7 @@ function openNotificationSettings() {
 
         <!-- TOP HEADER -->
         <div style="background:linear-gradient(135deg,#8B1538,#b91c4e);border-radius:20px 20px 0 0;padding:24px 24px 20px;position:relative;">
-            <div style="font-size:2em;margin-bottom:6px;">🔔</div>
+            <div style="font-size:2em;margin-bottom:6px;"></div>
             <div style="color:white;font-size:1.2em;font-weight:800;letter-spacing:-0.3px;">Notifications</div>
             <div style="color:rgba(255,255,255,0.7);font-size:0.82em;margin-top:2px;">Auto-alert citizens when their report status changes</div>
             <button onclick="closeNotificationSettings()"
@@ -2517,7 +2517,7 @@ function openNotificationSettings() {
 
             <!-- HOW IT WORKS pill -->
             <div style="background:#fff3cd;border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:10px;border:1px solid #fde68a;">
-                <span style="font-size:1.3em;">💡</span>
+                <span style="font-size:1.3em;"></span>
                 <span style="font-size:0.82em;color:#92400e;font-weight:600;line-height:1.4;">When you change a report to <strong>Pending → In Progress → Resolved</strong>, the citizen gets an SMS and/or Email automatically.</span>
             </div>
 
@@ -2681,7 +2681,7 @@ function openNotificationLog() {
 
     const rows = log.length === 0
         ? `<div style="text-align:center;padding:40px;color:#9ca3af;">
-               <div style="font-size:2.5em;margin-bottom:8px;">📭</div>
+               <div style="font-size:2.5em;margin-bottom:8px;"></div>
                <div style="font-weight:600;">No notifications sent yet</div>
            </div>`
         : log.map(entry => {
@@ -2845,7 +2845,7 @@ function viewReportDetails(reportId) {
 
     const photosHTML = (report.photos && report.photos.length > 0 && report.photos.some(p => p.url))
         ? `<div style="margin-top:20px;">
-               <div style="font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">📸 Proof Photos (${report.photos.filter(p=>p.url).length})</div>
+               <div style="font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;"> Proof Photos (${report.photos.filter(p=>p.url).length})</div>
                <div style="display:flex;flex-wrap:wrap;gap:10px;">
                    ${report.photos.filter(p => p.url).map((p, i) => `
                        <div style="position:relative;width:110px;height:110px;border-radius:10px;overflow:hidden;border:2px solid #e5e7eb;cursor:pointer;flex-shrink:0;"
@@ -2858,7 +2858,7 @@ function viewReportDetails(reportId) {
                        </div>`).join('')}
                </div>
            </div>`
-        : `<div style="margin-top:16px;padding:14px;background:#f9fafb;border-radius:10px;text-align:center;color:#9ca3af;font-size:0.88em;">📷 No proof photos attached</div>`;
+        : `<div style="margin-top:16px;padding:14px;background:#f9fafb;border-radius:10px;text-align:center;color:#9ca3af;font-size:0.88em;"> No proof photos attached</div>`;
 
     const overlay = document.createElement('div');
     overlay.id = 'reportDetailModal';
@@ -3114,7 +3114,7 @@ function printReport(reportId) {
             </div>
             
             <div class="report-section">
-                <div class="section-title">📋 Report Information</div>
+                <div class="section-title"> Report Information</div>
                 <div class="info-grid">
                     <div class="info-label">Category:</div>
                     <div class="info-value">${report.category}</div>
@@ -3746,7 +3746,7 @@ function renderAlbum() {
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
                 <div style="flex:1;height:2px;background:linear-gradient(to right,#8B1538,transparent);"></div>
                 <div style="background:linear-gradient(135deg,#8B1538,#b91c4e);color:white;padding:6px 18px;border-radius:20px;font-size:0.83em;font-weight:800;white-space:nowrap;">
-                    📅 ${period} <span style="opacity:0.75;font-weight:600;">(${totalInPeriod} photo${totalInPeriod!==1?'s':''})</span>
+                     ${period} <span style="opacity:0.75;font-weight:600;">(${totalInPeriod} photo${totalInPeriod!==1?'s':''})</span>
                 </div>
                 <div style="flex:1;height:2px;background:linear-gradient(to left,#8B1538,transparent);"></div>
             </div>`;
