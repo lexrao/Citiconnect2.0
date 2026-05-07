@@ -139,20 +139,8 @@ function showDashboard() {
     
     // Show pending approvals badge
     updatePendingApprovalsBadge();
-
-    // Show loading indicator in reports list while data is being fetched
-    const reportsList = document.getElementById('reportsList');
-    if (reportsList) {
-        reportsList.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">⏳</div>
-                <h3>Loading Reports…</h3>
-                <p>Fetching from database, please wait.</p>
-            </div>
-        `;
-    }
     
-    // Initialize the app (loads reports from Firestore)
+    // Initialize the app
     initializeApp();
 }
 
@@ -713,10 +701,10 @@ function deleteAllReportsFromDB() {
 
 // ===================================
 // Initialize Application
-// NOTE: initializeApp() is called by showDashboard() after login.
-// Do NOT call it from DOMContentLoaded — the dashboard is hidden at that point
-// and calling it before login causes a race condition / double-load.
 // ===================================
+document.addEventListener('DOMContentLoaded', async function() {
+    await initializeApp();
+});
 
 async function initializeApp() {
     try {
@@ -737,26 +725,7 @@ async function initializeApp() {
     } catch (error) {
         console.error('Error initializing app:', error);
         AppState.reports = [];
-
-        // Show a visible error message in the reports list so the admin knows WHY it's empty
-        const reportsList = document.getElementById('reportsList');
-        if (reportsList) {
-            reportsList.innerHTML = `
-                <div class="empty-state" style="border: 2px solid #ef4444; background: #fef2f2; border-radius: 12px; padding: 32px;">
-                    <div class="empty-state-icon">⚠️</div>
-                    <h3 style="color: #991b1b;">Failed to Load Reports</h3>
-                    <p style="color: #7f1d1d; max-width: 420px; margin: 0 auto;">
-                        Could not connect to the database. This is usually caused by 
-                        <strong>Firestore Security Rules</strong> blocking read access.<br><br>
-                        <strong>Fix:</strong> Go to your 
-                        <a href="https://console.firebase.google.com/project/citiconnect-66702/firestore/rules" target="_blank" style="color:#8B1538;">
-                            Firebase Console → Firestore → Rules
-                        </a> and set rules to allow reads, or check the browser console for the exact error.
-                    </p>
-                    <p style="color:#6b7280; font-size:0.85em; margin-top:14px;">Error: ${error.message || error}</p>
-                </div>
-            `;
-        }
+        displayReports();
     }
 }
 
@@ -2284,10 +2253,10 @@ function displayManageReports() {
             <div class="manage-report-footer">
                 ${isAdmin() ? `
                 <div class="status-selector">
-                    <select class="status-select" onchange="updateReportStatus('${report.id}', this.value)">
-                        <option value="Pending" ${report.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                        <option value="In Progress" ${report.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-                        <option value="Resolved" ${report.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
+                    <select class="status-select" id="statusSelect_${report.id}" onchange="window.updateReportStatus('${report.id}', this.value)">
+                        <option value="Pending" ${report.status === 'Pending' ? 'selected' : ''}>🕐 Pending</option>
+                        <option value="In Progress" ${report.status === 'In Progress' ? 'selected' : ''}>🔧 In Progress</option>
+                        <option value="Resolved" ${report.status === 'Resolved' ? 'selected' : ''}>✅ Resolved</option>
                     </select>
                 </div>
                 ` : `
@@ -2800,16 +2769,25 @@ function showNotifResultToast(results, report, newStatus) {
 // Update Report Status
 // ===================================
 async function updateReportStatus(reportId, newStatus) {
+    console.log(`Attempting to update report ${reportId} to ${newStatus}`);
+    
     if (!isAdmin()) {
+        console.warn('Non-admin tried to update status');
         alert('⛔ Access Denied\n\nOnly Administrators can update report status.');
         displayManageReports();
         return;
     }
+    
     const report = AppState.reports.find(r => r.id === reportId);
-    if (!report) return;
+    if (!report) {
+        console.error(`Report ${reportId} not found`);
+        alert('⚠️ Report not found');
+        return;
+    }
 
     const oldStatus = report.status;
     report.status = newStatus;
+    console.log(`Status updated locally: ${oldStatus} → ${newStatus}`);
 
     if (newStatus === 'Resolved' && !report.responseTime) {
         const daysDiff = Math.floor((new Date() - report.date) / (1000 * 60 * 60 * 24));
@@ -2818,9 +2796,12 @@ async function updateReportStatus(reportId, newStatus) {
 
     try {
         await updateReportInDB(report);
-        console.log('Report status updated in database');
+        console.log('✓ Report status updated in Firestore database');
     } catch (error) {
-        console.error('Error updating database:', error);
+        console.error('❌ Error updating database:', error);
+        report.status = oldStatus;
+        alert('⚠️ Error saving status. Please try again.');
+        return;
     }
 
     displayManageReports();
