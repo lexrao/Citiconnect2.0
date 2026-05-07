@@ -1197,14 +1197,14 @@ const AnalyticsState = {
 
 // Category emoji + color mapping
 const CATEGORY_META = {
-    'Waste Management':        { emoji: '🗑️',  color: '#ef4444', light: 'rgba(239,68,68,0.15)' },
-    'Infrastructure Damage':   { emoji: '🏗️',  color: '#f59e0b', light: 'rgba(245,158,11,0.15)' },
-    'Environmental Violation': { emoji: '🌳',  color: '#10b981', light: 'rgba(16,185,129,0.15)' },
-    'Public Safety':           { emoji: '🚨',  color: '#8B1538', light: 'rgba(139,21,56,0.15)' },
-    'Water & Sanitation':      { emoji: '💧',  color: '#2563eb', light: 'rgba(37,99,235,0.15)' },
-    'Street Lighting':         { emoji: '💡',  color: '#D4AF37', light: 'rgba(212,175,55,0.15)' },
-    'Dog Issues':              { emoji: '🐕',  color: '#a16207', light: 'rgba(161,98,7,0.15)' },
-    'Other':                   { emoji: '📋',  color: '#6b7280', light: 'rgba(107,114,128,0.15)' }
+    'Waste Management':        { emoji: '',  color: '#ef4444', light: 'rgba(239,68,68,0.15)' },
+    'Infrastructure Damage':   { emoji: '',  color: '#f59e0b', light: 'rgba(245,158,11,0.15)' },
+    'Environmental Violation': { emoji: '',  color: '#10b981', light: 'rgba(16,185,129,0.15)' },
+    'Public Safety':           { emoji: '',  color: '#8B1538', light: 'rgba(139,21,56,0.15)' },
+    'Water & Sanitation':      { emoji: '',  color: '#2563eb', light: 'rgba(37,99,235,0.15)' },
+    'Street Lighting':         { emoji: '',  color: '#D4AF37', light: 'rgba(212,175,55,0.15)' },
+    'Dog Issues':              { emoji: '',  color: '#a16207', light: 'rgba(161,98,7,0.15)' },
+    'Other':                   { emoji: '',  color: '#6b7280', light: 'rgba(107,114,128,0.15)' }
 };
 
 function getCategoryMeta(cat) {
@@ -3282,7 +3282,7 @@ function showExportMenu() {
             <button onclick="exportCategory('Waste Management'); closeExportMenu();" 
                     class="export-category-btn" ${categoryCounts['Waste Management'] === 0 ? 'disabled' : ''}>
                 <span style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 20px;">🗑️</span>
+                    <span style="font-size: 20px;"></span>
                     <span>Waste Management</span>
                 </span>
                 <span class="count-badge">${categoryCounts['Waste Management']} reports</span>
@@ -3291,7 +3291,7 @@ function showExportMenu() {
             <button onclick="exportCategory('Infrastructure Damage'); closeExportMenu();" 
                     class="export-category-btn" ${categoryCounts['Infrastructure Damage'] === 0 ? 'disabled' : ''}>
                 <span style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 20px;">🏗️</span>
+                    <span style="font-size: 20px;"></span>
                     <span>Infrastructure Damage</span>
                 </span>
                 <span class="count-badge">${categoryCounts['Infrastructure Damage']} reports</span>
@@ -3300,7 +3300,7 @@ function showExportMenu() {
             <button onclick="exportCategory('Environmental Violation'); closeExportMenu();" 
                     class="export-category-btn" ${categoryCounts['Environmental Violation'] === 0 ? 'disabled' : ''}>
                 <span style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 20px;">🌳</span>
+                    <span style="font-size: 20px;"></span>
                     <span>Environmental Violation</span>
                 </span>
                 <span class="count-badge">${categoryCounts['Environmental Violation']} reports</span>
@@ -3309,7 +3309,7 @@ function showExportMenu() {
             <button onclick="exportCategory('Public Safety'); closeExportMenu();" 
                     class="export-category-btn" ${categoryCounts['Public Safety'] === 0 ? 'disabled' : ''}>
                 <span style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 20px;">🚨</span>
+                    <span style="font-size: 20px;"></span>
                     <span>Public Safety</span>
                 </span>
                 <span class="count-badge">${categoryCounts['Public Safety']} reports</span>
@@ -3318,7 +3318,7 @@ function showExportMenu() {
             <button onclick="exportCategory('Water & Sanitation'); closeExportMenu();" 
                     class="export-category-btn" ${categoryCounts['Water & Sanitation'] === 0 ? 'disabled' : ''}>
                 <span style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 20px;">💧</span>
+                    <span style="font-size: 20px;"></span>
                     <span>Water & Sanitation</span>
                 </span>
                 <span class="count-badge">${categoryCounts['Water & Sanitation']} reports</span>
@@ -3327,7 +3327,7 @@ function showExportMenu() {
             <button onclick="exportCategory('Street Lighting'); closeExportMenu();" 
                     class="export-category-btn" ${categoryCounts['Street Lighting'] === 0 ? 'disabled' : ''}>
                 <span style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 20px;">💡</span>
+                    <span style="font-size: 20px;"></span>
                     <span>Street Lighting</span>
                 </span>
                 <span class="count-badge">${categoryCounts['Street Lighting']} reports</span>
@@ -3336,7 +3336,7 @@ function showExportMenu() {
             <button onclick="exportCategory('Dog Issues'); closeExportMenu();" 
                     class="export-category-btn" ${categoryCounts['Dog Issues'] === 0 ? 'disabled' : ''}>
                 <span style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 20px;">🐕</span>
+                    <span style="font-size: 20px;"></span>
                     <span>Dog Issues</span>
                 </span>
                 <span class="count-badge">${categoryCounts['Dog Issues']} reports</span>
@@ -3345,7 +3345,7 @@ function showExportMenu() {
             <button onclick="exportCategory('Other'); closeExportMenu();" 
                     class="export-category-btn" ${categoryCounts['Other'] === 0 ? 'disabled' : ''}>
                 <span style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 20px;">📋</span>
+                    <span style="font-size: 20px;"></span>
                     <span>Other</span>
                 </span>
                 <span class="count-badge">${categoryCounts['Other']} reports</span>
@@ -3717,7 +3717,7 @@ function renderAlbum() {
     if (photos.length === 0) {
         container.innerHTML = `
         <div style="text-align:center;padding:60px 20px;color:#9ca3af;">
-            <div style="font-size:3em;margin-bottom:12px;">📭</div>
+            <div style="font-size:3em;margin-bottom:12px;"></div>
             <div style="font-weight:700;font-size:1.05em;color:#6b7280;margin-bottom:6px;">No Photos Found</div>
             <div style="font-size:0.88em;">No proof photos match your current filters.</div>
         </div>`;
