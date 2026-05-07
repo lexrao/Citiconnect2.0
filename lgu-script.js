@@ -2255,7 +2255,7 @@ function displayManageReports() {
                 <div class="status-selector">
                     <select class="status-select" id="statusSelect_${report.id}" onchange="window.updateReportStatus('${report.id}', this.value)">
                         <option value="Pending" ${report.status === 'Pending' ? 'selected' : ''}> Pending</option>
-                        <option value="In Progress" ${report.status === 'In Progress' ? 'selected' : ''}>🔧 In Progress</option>
+                        <option value="In Progress" ${report.status === 'In Progress' ? 'selected' : ''}> In Progress</option>
                         <option value="Resolved" ${report.status === 'Resolved' ? 'selected' : ''}> Resolved</option>
                     </select>
                 </div>
