@@ -153,7 +153,7 @@ function applyRoleRestrictions() {
     // Role badge in header
     const roleBadge = document.getElementById('roleBadge');
     if (roleBadge) {
-        roleBadge.textContent = admin ? '🔑 Administrator' : '👁️ Staff (View Only)';
+        roleBadge.textContent = admin ? ' Administrator' : ' Staff (View Only)';
         roleBadge.style.background = admin ? '#8B1538' : '#2563eb';
         roleBadge.style.color = 'white';
         roleBadge.style.padding = '3px 12px';
@@ -196,7 +196,7 @@ function handleLogin(e) {
     if (user) {
         // Check if account is pending approval
         if (user.status === 'Pending') {
-            showLoginAlert('⏳ Your account is awaiting admin approval. Please wait for confirmation.', 'error');
+            showLoginAlert(' Your account is awaiting admin approval. Please wait for confirmation.', 'error');
             return;
         }
         // Check if account is rejected
@@ -426,10 +426,10 @@ function displayUsersList() {
                     </div>
                     <div class="user-username">@${user.username}</div>
                     <div class="user-meta">
-                        <span class="user-stat">📧 ${user.email}</span>
-                        <span class="user-stat">💼 ${user.position}</span>
-                        <span class="user-stat">🎭 ${user.role}</span>
-                        <span class="user-stat">📅 Applied: ${new Date(user.createdDate).toLocaleDateString()}</span>
+                        <span class="user-stat"> ${user.email}</span>
+                        <span class="user-stat"> ${user.position}</span>
+                        <span class="user-stat"> ${user.role}</span>
+                        <span class="user-stat"> Applied: ${new Date(user.createdDate).toLocaleDateString()}</span>
                     </div>
                 </div>
                 <div class="user-actions" style="gap:8px;">
@@ -464,9 +464,9 @@ function displayUsersList() {
                     <div class="user-name">${user.fullName}</div>
                     <div class="user-username">@${user.username}</div>
                     <div class="user-meta">
-                        <span class="user-stat">📧 ${user.email}</span>
-                        <span class="user-stat">💼 ${user.position}</span>
-                        <span class="user-stat">📅 Joined: ${new Date(user.createdDate).toLocaleDateString()}</span>
+                        <span class="user-stat"> ${user.email}</span>
+                        <span class="user-stat"> ${user.position}</span>
+                        <span class="user-stat"> Joined: ${new Date(user.createdDate).toLocaleDateString()}</span>
                     </div>
                 </div>
                 <div class="user-actions">
@@ -474,9 +474,9 @@ function displayUsersList() {
                     <small style="color:${statusColor};font-weight:600;">${statusLabel}</small>
                     ${isAdmin() && user.username !== AuthState.currentUser ? `
                     <button class="btn btn-danger" style="padding:5px 12px;font-size:0.8em;margin-top:6px;" onclick="deleteUser('${user.username}')">
-                        🗑️ Delete
+                         Delete
                     </button>` : isAdmin() && user.username === AuthState.currentUser ? `
-                    <small style="color:#9ca3af;font-size:0.75em;margin-top:6px;display:block;">🔒 Current user</small>` : ''}
+                    <small style="color:#9ca3af;font-size:0.75em;margin-top:6px;display:block;"> Current user</small>` : ''}
                 </div>
             </div>`;
         }).join('');
@@ -615,7 +615,7 @@ function deleteUser(username) {
         const toast = document.createElement('div');
         toast.className = 'new-report-toast';
         toast.style.borderLeftColor = '#ef4444';
-        toast.innerHTML = `🗑️ <span>User <strong>${username}</strong> has been deleted.</span>`;
+        toast.innerHTML = ` <span>User <strong>${username}</strong> has been deleted.</span>`;
         document.body.appendChild(toast);
         setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3500);
     }
@@ -949,15 +949,15 @@ function displayReports() {
             <div class="report-category">${report.category}</div>
             <div class="report-description">${report.description}</div>
             <div class="report-meta">
-                <span>📍 ${report.location}</span>
-                <span>📅 ${formatDate(report.date)}</span>
-                <span>👤 ${report.name}</span>
-                <span>📞 ${report.contact}</span>
-                ${report.responseTime ? `<span>⏱️ Response: ${report.responseTime} days</span>` : ''}
+                <span> ${report.location}</span>
+                <span> ${formatDate(report.date)}</span>
+                <span> ${report.name}</span>
+                <span> ${report.contact}</span>
+                ${report.responseTime ? `<span> Response: ${report.responseTime} days</span>` : ''}
             </div>
             <div class="report-actions">
                 <button class="btn btn-primary" onclick="printReport('${report.id}')">
-                    <span>🖨️</span> Print Report
+                    <span></span> Print Report
                 </button>
             </div>
         </div>
@@ -1146,7 +1146,7 @@ function updateRecentActivity() {
             <div>
                 <strong style="color: var(--primary-color);">${report.id}</strong> - 
                 <span>${report.category}</span>
-                <span style="margin-left: 10px; font-size: 0.9em; color: #6b7280;">📍 ${report.location}</span>
+                <span style="margin-left: 10px; font-size: 0.9em; color: #6b7280;"> ${report.location}</span>
             </div>
             <span style="color: #6b7280; font-size: 0.9em;">${formatDate(report.date)}</span>
         </div>
@@ -1208,7 +1208,7 @@ const CATEGORY_META = {
 };
 
 function getCategoryMeta(cat) {
-    return CATEGORY_META[cat] || { emoji: '📋', color: '#6b7280', light: 'rgba(107,114,128,0.15)' };
+    return CATEGORY_META[cat] || { emoji: '', color: '#6b7280', light: 'rgba(107,114,128,0.15)' };
 }
 
 // ===================================
@@ -1438,9 +1438,9 @@ function renderStatusChart(type) {
             data: {
                 labels,
                 datasets: [
-                    { label: '🕐 Pending',     data: pendingData,  backgroundColor: '#f59e0b', borderRadius: 0 },
-                    { label: '🔄 In Progress', data: inProgData,   backgroundColor: '#2563eb', borderRadius: 0 },
-                    { label: '✅ Resolved',    data: resolvedData, backgroundColor: '#10b981', borderRadius: 0 }
+                    { label: ' Pending',     data: pendingData,  backgroundColor: '#f59e0b', borderRadius: 0 },
+                    { label: ' In Progress', data: inProgData,   backgroundColor: '#2563eb', borderRadius: 0 },
+                    { label: ' Resolved',    data: resolvedData, backgroundColor: '#10b981', borderRadius: 0 }
                 ]
             },
             options: { ...baseOpts, scales: {
@@ -1452,7 +1452,7 @@ function renderStatusChart(type) {
         chartConfig = {
             type: 'pie',
             data: {
-                labels: ['🕐 Pending', '🔄 In Progress', '✅ Resolved'],
+                labels: [' Pending', ' In Progress', ' Resolved'],
                 datasets: [{
                     data: [totalPending, totalInProg, totalResolved],
                     backgroundColor: ['#f59e0b', '#2563eb', '#10b981'],
@@ -1471,7 +1471,7 @@ function renderStatusChart(type) {
         chartConfig = {
             type: 'doughnut',
             data: {
-                labels: ['🕐 Pending', '🔄 In Progress', '✅ Resolved'],
+                labels: [' Pending', ' In Progress', ' Resolved'],
                 datasets: [{
                     data: [totalPending, totalInProg, totalResolved],
                     backgroundColor: ['#f59e0b', '#2563eb', '#10b981'],
@@ -1492,9 +1492,9 @@ function renderStatusChart(type) {
             data: {
                 labels,
                 datasets: [
-                    { label: '🕐 Pending',     data: pendingData,  borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)',  tension: 0.4, fill: true, pointRadius: 5, pointHoverRadius: 7 },
-                    { label: '🔄 In Progress', data: inProgData,   borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.1)',   tension: 0.4, fill: true, pointRadius: 5, pointHoverRadius: 7 },
-                    { label: '✅ Resolved',    data: resolvedData, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)',  tension: 0.4, fill: true, pointRadius: 5, pointHoverRadius: 7 }
+                    { label: ' Pending',     data: pendingData,  borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)',  tension: 0.4, fill: true, pointRadius: 5, pointHoverRadius: 7 },
+                    { label: ' In Progress', data: inProgData,   borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.1)',   tension: 0.4, fill: true, pointRadius: 5, pointHoverRadius: 7 },
+                    { label: ' Resolved',    data: resolvedData, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)',  tension: 0.4, fill: true, pointRadius: 5, pointHoverRadius: 7 }
                 ]
             },
             options: { ...baseOpts, scales: {
@@ -1511,10 +1511,10 @@ function renderStatusChart(type) {
     if (summaryEl) {
         const resRate = grandTotal > 0 ? ((totalResolved / grandTotal) * 100).toFixed(0) : 0;
         summaryEl.innerHTML = `
-            <span class="status-summary-pill" style="background:#fef3c7; color:#92400e;">🕐 Pending: <strong style="margin-left:4px;">${totalPending}</strong></span>
-            <span class="status-summary-pill" style="background:#dbeafe; color:#1e40af;">🔄 In Progress: <strong style="margin-left:4px;">${totalInProg}</strong></span>
-            <span class="status-summary-pill" style="background:#d1fae5; color:#065f46;">✅ Resolved: <strong style="margin-left:4px;">${totalResolved}</strong></span>
-            <span class="status-summary-pill" style="background:#f3f4f6; color:#374151;">📊 Resolution Rate: <strong style="margin-left:4px;">${resRate}%</strong></span>
+            <span class="status-summary-pill" style="background:#fef3c7; color:#92400e;"> Pending: <strong style="margin-left:4px;">${totalPending}</strong></span>
+            <span class="status-summary-pill" style="background:#dbeafe; color:#1e40af;"> In Progress: <strong style="margin-left:4px;">${totalInProg}</strong></span>
+            <span class="status-summary-pill" style="background:#d1fae5; color:#065f46;"> Resolved: <strong style="margin-left:4px;">${totalResolved}</strong></span>
+            <span class="status-summary-pill" style="background:#f3f4f6; color:#374151;"> Resolution Rate: <strong style="margin-left:4px;">${resRate}%</strong></span>
         `;
     }
 }
@@ -1608,7 +1608,7 @@ function renderTrendChart(type) {
                 labels,
                 datasets: [
                     {
-                        label: '📊 Total Reports',
+                        label: ' Total Reports',
                         data: totals,
                         borderColor: '#8B1538',
                         backgroundColor: isFill ? 'rgba(139,21,56,0.12)' : 'transparent',
@@ -1623,7 +1623,7 @@ function renderTrendChart(type) {
                         yAxisID: 'y'
                     },
                     {
-                        label: '✅ Resolved',
+                        label: ' Resolved',
                         data: months.map((m) => {
                             return AppState.reports.filter(r => {
                                 const d = r.date instanceof Date ? r.date : new Date(r.date);
@@ -1644,7 +1644,7 @@ function renderTrendChart(type) {
                         yAxisID: 'y'
                     },
                     {
-                        label: '🕐 Pending',
+                        label: ' Pending',
                         data: months.map((m) => {
                             return AppState.reports.filter(r => {
                                 const d = r.date instanceof Date ? r.date : new Date(r.date);
@@ -1713,7 +1713,7 @@ function renderTrendChart(type) {
                 labels,
                 datasets: [
                     {
-                        label: '📊 Total Reports',
+                        label: ' Total Reports',
                         data: totals,
                         borderColor: '#8B1538',
                         backgroundColor: 'rgba(139,21,56,0.15)',
@@ -1721,7 +1721,7 @@ function renderTrendChart(type) {
                         pointRadius: 4
                     },
                     {
-                        label: '🗑️ Waste Mgmt',
+                        label: ' Waste Mgmt',
                         data: data['Waste Management'],
                         borderColor: '#ef4444',
                         backgroundColor: 'rgba(239,68,68,0.08)',
@@ -1729,7 +1729,7 @@ function renderTrendChart(type) {
                         pointRadius: 3
                     },
                     {
-                        label: '🏗️ Infrastructure',
+                        label: ' Infrastructure',
                         data: data['Infrastructure Damage'],
                         borderColor: '#f59e0b',
                         backgroundColor: 'rgba(245,158,11,0.08)',
@@ -1818,7 +1818,7 @@ function populatePrintMonthSelect() {
         preview.style.color = '#374151';
         preview.innerHTML = `
             <div style="margin-bottom:12px;">
-                <strong style="font-size:1.1em; color:#8B1538;">📅 ${new Date(m.year, m.month).toLocaleString('default', { month: 'long', year: 'numeric' })}</strong>
+                <strong style="font-size:1.1em; color:#8B1538;"> ${new Date(m.year, m.month).toLocaleString('default', { month: 'long', year: 'numeric' })}</strong>
                 <span style="margin-left:12px; font-size:0.9em; color:#6b7280;">Total Reports: <strong style="color:#1f2937;">${total}</strong></span>
                 ${realReports.length > 0 ? `<span style="margin-left:12px; font-size:0.85em; background:#d1fae5; color:#065f46; padding:2px 8px; border-radius:10px;">✅ ${realReports.length} real DB report(s)</span>` : ''}
             </div>
@@ -1873,7 +1873,7 @@ function printChartCard(cardId, title) {
             <p>Barangay Danao, Antequera, Bohol &nbsp;|&nbsp; Printed: ${now.toLocaleString()}</p>
         </div>
     </div>
-    <div class="chart-title">📊 ${title}</div>
+    <div class="chart-title"> ${title}</div>
     ${chartImgSrc ? `<img class="chart-img" src="${chartImgSrc}" alt="${title} Chart">` : '<p style="color:#6b7280; text-align:center; padding:40px;">No chart image available</p>'}
     ${legendHTML ? `<div class="legend-area">${legendHTML}</div>` : ''}
     <div class="print-footer">
@@ -1952,7 +1952,7 @@ function printMonthlyReport() {
         { canvas: document.getElementById('trendChartCanvas'),    title: 'Monthly Trend' }
     ].filter(c => c.canvas).map(c => `
         <div style="margin-bottom:32px; break-inside:avoid;">
-            <div style="font-weight:700; color:#8B1538; margin-bottom:10px; font-size:1em;">📊 ${c.title}</div>
+            <div style="font-weight:700; color:#8B1538; margin-bottom:10px; font-size:1em;"> ${c.title}</div>
             <img style="width:100%; border:1px solid #e5e7eb; border-radius:6px; padding:8px; background:#fafafa;" src="${c.canvas.toDataURL('image/png',1.0)}" alt="${c.title}">
         </div>`).join('');
 
@@ -1997,13 +1997,13 @@ function printMonthlyReport() {
             <div class="org-sub">Antequera, Bohol — Citizen Reporting Platform</div>
         </div>
         <div>
-            <div class="report-title">📅 Monthly Report: ${monthLabel}</div>
+            <div class="report-title"> Monthly Report: ${monthLabel}</div>
             <div class="report-date">Printed: ${now.toLocaleString()}</div>
             <div class="report-date">Prepared by: ${window.AuthState?.currentUserData?.fullName || 'LGU Staff'}</div>
         </div>
     </div>
 
-    <div class="section-title">📊 Monthly Summary — ${monthLabel}</div>
+    <div class="section-title"> Monthly Summary — ${monthLabel}</div>
     <div class="summary-grid">
         <div class="summary-box" style="background:#fef3e6; border-color:#8B153844;">
             <div class="val" style="color:#8B1538;">${totals[idx]}</div>
@@ -2023,13 +2023,13 @@ function printMonthlyReport() {
         </div>
     </div>
 
-    <div class="section-title">📋 Reports by Category</div>
+    <div class="section-title"> Reports by Category</div>
     <table>
         <thead><tr><th>Category</th><th style="text-align:center;">Count</th><th>Distribution</th></tr></thead>
         <tbody>${catRows}</tbody>
     </table>
 
-    <div class="section-title">📝 Detailed Report List</div>
+    <div class="section-title"> Detailed Report List</div>
     <table>
         <thead>
             <tr>
@@ -2040,7 +2040,7 @@ function printMonthlyReport() {
     </table>
 
     <div class="page-break"></div>
-    <div class="section-title">📈 Analytics Charts — ${monthLabel}</div>
+    <div class="section-title"> Analytics Charts — ${monthLabel}</div>
     ${chartImgs}
 
     <div class="print-footer">
@@ -2245,24 +2245,24 @@ function displayManageReports() {
                 <div class="report-category">${report.category}</div>
                 <div class="report-description">${report.description}</div>
                 <div class="report-meta">
-                    <span>📍 ${report.location}</span>
-                    <span>📅 ${formatDate(report.date)}</span>
-                    <span>👤 ${report.name}</span>
+                    <span> ${report.location}</span>
+                    <span> ${formatDate(report.date)}</span>
+                    <span> ${report.name}</span>
                 </div>
             </div>
             <div class="manage-report-footer">
                 ${isAdmin() ? `
                 <div class="status-selector">
                     <select class="status-select" id="statusSelect_${report.id}" onchange="window.updateReportStatus('${report.id}', this.value)">
-                        <option value="Pending" ${report.status === 'Pending' ? 'selected' : ''}>🕐 Pending</option>
+                        <option value="Pending" ${report.status === 'Pending' ? 'selected' : ''}> Pending</option>
                         <option value="In Progress" ${report.status === 'In Progress' ? 'selected' : ''}>🔧 In Progress</option>
-                        <option value="Resolved" ${report.status === 'Resolved' ? 'selected' : ''}>✅ Resolved</option>
+                        <option value="Resolved" ${report.status === 'Resolved' ? 'selected' : ''}> Resolved</option>
                     </select>
                 </div>
                 ` : `
                 <div class="status-selector">
                     <span class="badge badge-${report.status.toLowerCase().replace(' ', '-')}" style="font-size:0.95em;padding:8px 16px;">${report.status}</span>
-                    <small style="color:#6b7280;margin-left:6px;">🔒 View Only</small>
+                    <small style="color:#6b7280;margin-left:6px;"> View Only</small>
                 </div>
                 `}
                 <div style="display:flex;gap:8px;">
@@ -2270,11 +2270,11 @@ function displayManageReports() {
                         View Details
                     </button>
                     <button class="btn btn-secondary" onclick="printReport('${report.id}')">
-                        🖨️ Print
+                         Print
                     </button>
                     ${isAdmin() ? `
                     <button class="btn btn-danger" style="padding:8px 14px;font-size:0.85em;" onclick="deleteReport('${report.id}')">
-                        🗑️ Delete
+                         Delete
                     </button>` : ''}
                 </div>
             </div>
@@ -2309,7 +2309,7 @@ async function deleteReport(reportId) {
         const toast = document.createElement('div');
         toast.className = 'new-report-toast';
         toast.style.borderLeftColor = '#ef4444';
-        toast.innerHTML = `🗑️ <span>Report <strong>${reportId}</strong> has been deleted.</span>`;
+        toast.innerHTML = ` <span>Report <strong>${reportId}</strong> has been deleted.</span>`;
         document.body.appendChild(toast);
         setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3500);
     } catch (error) {
@@ -2363,7 +2363,7 @@ function addNotificationLog(entry) {
 
 // ---- Message Templates ----
 function getNotificationMessages(report, newStatus) {
-    const statusEmoji = { 'Pending': '🕐', 'In Progress': '🔧', 'Resolved': '✅' }[newStatus] || '📋';
+    const statusEmoji = { 'Pending': '', 'In Progress': '🔧', 'Resolved': '' }[newStatus] || '';
     const barangay = 'Barangay Danao, Antequera, Bohol';
 
     const smsMessage =
@@ -2615,12 +2615,12 @@ function openNotificationSettings() {
                 <button onclick="saveNotificationSettings()"
                     style="padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#8B1538,#b91c4e);color:white;font-size:14px;font-weight:700;cursor:pointer;transition:opacity 0.2s;"
                     onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-                    💾 Save
+                     Save
                 </button>
                 <button onclick="openNotificationLog()"
                     style="padding:13px;border:2px solid #e5e7eb;border-radius:12px;background:white;color:#374151;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.2s;"
                     onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
-                    📋 View Log
+                     View Log
                 </button>
             </div>
 
@@ -2664,7 +2664,7 @@ function saveNotificationSettings() {
     const toast = document.createElement('div');
     toast.className = 'new-report-toast';
     toast.style.borderLeftColor = '#10b981';
-    toast.innerHTML = '✅ <span><strong>Notification settings saved!</strong></span>';
+    toast.innerHTML = ' <span><strong>Notification settings saved!</strong></span>';
     document.body.appendChild(toast);
     setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3000);
 }
@@ -2700,10 +2700,10 @@ function openNotificationLog() {
                     </div>
                     <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
                         <span style="font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;background:${emailNA ? '#f3f4f6' : emailOk ? '#d1fae5' : '#fee2e2'};color:${emailNA ? '#9ca3af' : emailOk ? '#065f46' : '#991b1b'};">
-                            📧 ${emailNA ? 'N/A' : emailOk ? 'Sent' : 'Failed'}
+                             ${emailNA ? 'N/A' : emailOk ? 'Sent' : 'Failed'}
                         </span>
                         <span style="font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;background:${smsNA ? '#f3f4f6' : smsOk ? '#d1fae5' : '#fee2e2'};color:${smsNA ? '#9ca3af' : smsOk ? '#065f46' : '#991b1b'};">
-                            📱 ${smsNA ? 'N/A' : smsOk ? 'Sent' : 'Failed'}
+                             ${smsNA ? 'N/A' : smsOk ? 'Sent' : 'Failed'}
                         </span>
                         ${entry.email ? `<span style="font-size:11px;color:#6b7280;">${entry.email}</span>` : ''}
                         ${entry.contact ? `<span style="font-size:11px;color:#6b7280;">${entry.contact}</span>` : ''}
@@ -2718,7 +2718,7 @@ function openNotificationLog() {
     <div style="background:#fff;border-radius:18px;padding:0;max-width:620px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,0.35);max-height:85vh;display:flex;flex-direction:column;animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);">
         <div style="padding:24px 28px 18px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
             <div>
-                <h2 style="color:#8B1538;font-size:1.2em;font-weight:800;margin:0;">📋 Notification Log</h2>
+                <h2 style="color:#8B1538;font-size:1.2em;font-weight:800;margin:0;"> Notification Log</h2>
                 <p style="color:#6b7280;font-size:0.82em;margin:3px 0 0;">${log.length} notification event${log.length !== 1 ? 's' : ''} recorded</p>
             </div>
             <div style="display:flex;gap:8px;align-items:center;">
@@ -2754,13 +2754,13 @@ function showNotifResultToast(results, report, newStatus) {
     if (emailNA && smsNA) return;
 
     const parts = [];
-    if (!emailNA) parts.push(`📧 Email: ${emailOk ? '✅ Sent' : '❌ Failed'}`);
-    if (!smsNA)   parts.push(`📱 SMS: ${smsOk ? '✅ Sent' : '❌ Failed'}`);
+    if (!emailNA) parts.push(` Email: ${emailOk ? '✅ Sent' : '❌ Failed'}`);
+    if (!smsNA)   parts.push(` SMS: ${smsOk ? '✅ Sent' : '❌ Failed'}`);
 
     const toast = document.createElement('div');
     toast.className = 'new-report-toast';
     toast.style.borderLeftColor = (emailOk || smsOk) ? '#10b981' : '#ef4444';
-    toast.innerHTML = `🔔 <span><strong>Citizen Notified</strong> — ${parts.join(' &nbsp;|&nbsp; ')}</span>`;
+    toast.innerHTML = ` <span><strong>Citizen Notified</strong> — ${parts.join(' &nbsp;|&nbsp; ')}</span>`;
     document.body.appendChild(toast);
     setTimeout(() => { if (toast.parentNode) toast.remove(); }, 5000);
 }
@@ -2814,7 +2814,7 @@ async function updateReportStatus(reportId, newStatus) {
     }
 
     // Show status-updated toast
-    const statusEmoji = { 'Pending': '🕐', 'In Progress': '🔧', 'Resolved': '✅' }[newStatus] || '📋';
+    const statusEmoji = { 'Pending': '', 'In Progress': '🔧', 'Resolved': '' }[newStatus] || '';
     const statusToast = document.createElement('div');
     statusToast.className = 'new-report-toast';
     statusToast.style.borderLeftColor = { 'Pending': '#f59e0b', 'In Progress': '#3b82f6', 'Resolved': '#10b981' }[newStatus] || '#8B1538';
@@ -2893,25 +2893,25 @@ function viewReportDetails(reportId) {
                 </div>
                 <div style="background:#f9fafb;border-radius:10px;padding:12px 14px;">
                     <div style="font-size:11px;color:#9ca3af;font-weight:600;margin-bottom:3px;">REPORTER</div>
-                    <div style="font-weight:700;color:#1f2937;font-size:0.9em;">👤 ${report.name}</div>
+                    <div style="font-weight:700;color:#1f2937;font-size:0.9em;"> ${report.name}</div>
                 </div>
                 <div style="background:#f9fafb;border-radius:10px;padding:12px 14px;">
                     <div style="font-size:11px;color:#9ca3af;font-weight:600;margin-bottom:3px;">CONTACT</div>
-                    <div style="font-weight:700;color:#1f2937;font-size:0.9em;">📞 ${report.contact}</div>
+                    <div style="font-weight:700;color:#1f2937;font-size:0.9em;"> ${report.contact}</div>
                 </div>
                 ${report.email ? `
                 <div style="background:#f9fafb;border-radius:10px;padding:12px 14px;">
                     <div style="font-size:11px;color:#9ca3af;font-weight:600;margin-bottom:3px;">EMAIL</div>
-                    <div style="font-weight:700;color:#1f2937;font-size:0.9em;">📧 ${report.email}</div>
+                    <div style="font-weight:700;color:#1f2937;font-size:0.9em;"> ${report.email}</div>
                 </div>` : ''}
                 <div style="background:#f9fafb;border-radius:10px;padding:12px 14px;${report.email ? '' : 'grid-column:span 2;'}">
                     <div style="font-size:11px;color:#9ca3af;font-weight:600;margin-bottom:3px;">LOCATION</div>
-                    <div style="font-weight:700;color:#1f2937;font-size:0.9em;">📍 ${report.location}</div>
+                    <div style="font-weight:700;color:#1f2937;font-size:0.9em;"> ${report.location}</div>
                 </div>
                 ${report.responseTime != null ? `
                 <div style="background:#f0fdf4;border-radius:10px;padding:12px 14px;border:1px solid #d1fae5;">
                     <div style="font-size:11px;color:#059669;font-weight:600;margin-bottom:3px;">RESPONSE TIME</div>
-                    <div style="font-weight:700;color:#065f46;font-size:0.9em;">⏱️ ${report.responseTime} day${report.responseTime !== 1 ? 's' : ''}</div>
+                    <div style="font-weight:700;color:#065f46;font-size:0.9em;"> ${report.responseTime} day${report.responseTime !== 1 ? 's' : ''}</div>
                 </div>` : ''}
             </div>
 
@@ -2930,7 +2930,7 @@ function viewReportDetails(reportId) {
             <button onclick="printReport('${report.id}')"
                 style="padding:9px 20px;border:2px solid #e5e7eb;border-radius:8px;background:white;color:#374151;font-size:13px;font-weight:600;cursor:pointer;"
                 onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
-                🖨️ Print
+                 Print
             </button>
             <button onclick="document.getElementById('reportDetailModal').remove()"
                 style="padding:9px 20px;border:none;border-radius:8px;background:linear-gradient(135deg,#8B1538,#b91c4e);color:white;font-size:13px;font-weight:700;cursor:pointer;">
@@ -3101,7 +3101,7 @@ function printReport(reportId) {
         </head>
         <body>
             <div class="print-header">
-                <h1>🏛️ CITIZEN REPORT</h1>
+                <h1> CITIZEN REPORT</h1>
                 <p>Barangay Danao, Antequera, Bohol</p>
             </div>
             
@@ -3154,7 +3154,7 @@ function printReport(reportId) {
             </div>
             
             <div class="report-section">
-                <div class="section-title">📝 Issue Description</div>
+                <div class="section-title"> Issue Description</div>
                 <div class="description-box">
                     ${report.description}
                 </div>
@@ -3162,7 +3162,7 @@ function printReport(reportId) {
 
             ${report.photos && report.photos.length > 0 ? `
             <div class="report-section" style="page-break-inside:avoid;">
-                <div class="section-title">📸 Proof Photos (${report.photos.length})</div>
+                <div class="section-title"> Proof Photos (${report.photos.length})</div>
                 <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;">
                     ${report.photos.map((p, i) => `
                     <div style="text-align:center;">
@@ -3258,7 +3258,7 @@ function showExportMenu() {
     
     modal.innerHTML = `
         <div style="margin-bottom: 25px;">
-            <h2 style="color: #8B1538; margin-bottom: 10px;">📊 Export Reports to Excel</h2>
+            <h2 style="color: #8B1538; margin-bottom: 10px;"> Export Reports to Excel</h2>
             <p style="color: #666;">Choose which reports you want to export</p>
         </div>
         
@@ -3619,13 +3619,13 @@ const AlbumState = {
 };
 
 const CATEGORY_ICONS = {
-    'Waste Management':       '🗑️',
-    'Infrastructure Damage':  '🏗️',
-    'Environmental Violation':'🌿',
-    'Public Safety':          '🚨',
-    'Water & Sanitation':     '💧',
-    'Street Lighting':        '💡',
-    'Other':                  '📌'
+    'Waste Management':       '',
+    'Infrastructure Damage':  '',
+    'Environmental Violation':'',
+    'Public Safety':          '',
+    'Water & Sanitation':     '',
+    'Street Lighting':        '',
+    'Other':                  ''
 };
 
 const CATEGORY_COLORS = {
@@ -3754,7 +3754,7 @@ function renderAlbum() {
         // Within each period, group by category
         Object.entries(cats).forEach(([cat, catPhotos]) => {
             const colors = CATEGORY_COLORS[cat] || CATEGORY_COLORS['Other'];
-            const icon   = CATEGORY_ICONS[cat] || '📌';
+            const icon   = CATEGORY_ICONS[cat] || '';
             html += `
             <div style="margin-bottom:22px;border:1.5px solid ${colors.border}33;border-radius:14px;overflow:hidden;">
                 <!-- Category Header -->
@@ -3776,7 +3776,7 @@ function renderAlbum() {
                             onerror="this.parentElement.style.display='none'">
                         <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.75));padding:8px 8px 6px;color:white;">
                             <div style="font-size:10px;font-weight:700;font-family:monospace;letter-spacing:.3px;">${p.reportId}</div>
-                            <div style="font-size:9px;opacity:0.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">📍 ${p.location || '—'}</div>
+                            <div style="font-size:9px;opacity:0.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"> ${p.location || '—'}</div>
                         </div>
                         <div style="position:absolute;top:7px;right:7px;background:rgba(0,0,0,0.5);border-radius:6px;padding:3px 6px;font-size:9px;color:white;font-weight:600;">🔍</div>
                     </div>`).join('')}
@@ -3802,7 +3802,7 @@ function albumOpenLightbox(url) {
             style="position:absolute;top:-14px;right:-14px;width:36px;height:36px;background:#ef4444;color:white;border:none;border-radius:50%;font-size:1.1em;cursor:pointer;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);">✕</button>
         <a href="${url}" download target="_blank"
             style="position:absolute;bottom:-14px;right:-14px;width:36px;height:36px;background:#10b981;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:1em;box-shadow:0 4px 12px rgba(0,0,0,0.4);"
-            onclick="event.stopPropagation()" title="Download photo">⬇️</a>
+            onclick="event.stopPropagation()" title="Download photo"></a>
     </div>`;
     document.body.appendChild(overlay);
 }
