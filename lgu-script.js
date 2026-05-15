@@ -2209,6 +2209,20 @@ function updateLocationHotspots() {
 // ===================================
 function displayManageReports() {
     const manageList = document.getElementById('manageReportsList');
+    const staffBanner = document.getElementById('staffBanner');
+    
+    // Show/hide staff banner based on user role
+    if (staffBanner) {
+        staffBanner.style.display = isAdmin() ? 'none' : 'block';
+    }
+    
+    // Update description based on user role
+    const descElem = document.querySelector('[id="manage"] .card-header + p');
+    if (descElem) {
+        descElem.textContent = isAdmin() ? 
+            'Update report status and response times' : 
+            'View, update status, and upload proof. Delete reports are admin-only.';
+    }
     
     const sortedReports = [...AppState.reports].sort((a, b) => {
         const priorityOrder = { 'High': 3, 'Medium': 2, 'Low': 1 };
@@ -2275,7 +2289,6 @@ function displayManageReports() {
                 `}
             </div>
             <div class="manage-report-footer">
-                ${isAdmin() ? `
                 <div class="status-selector">
                     <select class="status-select" id="statusSelect_${report.id}" onchange="window.updateReportStatus('${report.id}', this.value)">
                         <option value="Pending" ${report.status === 'Pending' ? 'selected' : ''}> Pending</option>
@@ -2283,17 +2296,11 @@ function displayManageReports() {
                         <option value="Resolved" ${report.status === 'Resolved' ? 'selected' : ''}> Resolved</option>
                     </select>
                 </div>
-                ` : `
-                <div class="status-selector">
-                    <span class="badge badge-${report.status.toLowerCase().replace(' ', '-')}" style="font-size:0.95em;padding:8px 16px;">${report.status}</span>
-                    <small style="color:#6b7280;margin-left:6px;">🔒 View Only</small>
-                </div>
-                `}
                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
                     <button class="btn btn-primary" onclick="viewReportDetails('${report.id}')">
                         View Details
                     </button>
-                    ${(report.status === 'In Progress' || report.status === 'Resolved') && isAdmin() ? `
+                    ${(report.status === 'In Progress' || report.status === 'Resolved') ? `
                     <button class="btn" style="background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;padding:8px 14px;font-size:0.85em;" onclick="openProofUploadModal('${report.id}')">
                         📸 Proof
                     </button>` : ''}
