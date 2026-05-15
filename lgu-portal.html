@@ -135,475 +135,271 @@
         </div>
     </div>
 
+    <!-- Proof Upload Modal -->
+    <div id="proofUploadModal" class="modal" style="display: none;">
+        <div class="modal-content" style="width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e5e7eb; padding: 24px; margin-bottom: 0;">
+                <div>
+                    <h2 style="margin: 0; color: #1f2937; font-size: 1.3em; font-weight: 800;">📸 Upload Proof Media</h2>
+                    <p id="proofReportTitle" style="margin: 6px 0 0; color: #6b7280; font-size: 0.85em;">Report ID: </p>
+                </div>
+                <button onclick="closeProofModal()" style="background: none; border: none; font-size: 1.5em; cursor: pointer; color: #9ca3af; padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">×</button>
+            </div>
+            
+            <div style="padding: 24px;">
+                <div style="background: #f0fdf4; border-left: 4px solid #22c55e; padding: 16px; border-radius: 6px; margin-bottom: 24px;">
+                    <p style="margin: 0; color: #166534; font-weight: 600;">
+                        📌 Upload evidence photos or videos documenting the current state of this issue
+                    </p>
+                </div>
+
+                <form id="proofUploadForm" style="display: flex; flex-direction: column; gap: 20px;">
+                    <!-- File Upload Area -->
+                    <div>
+                        <label style="display: block; margin-bottom: 10px; font-weight: 700; color: #374151;">Select Photos/Videos<span class="required">*</span></label>
+                        <div id="proofDropZone" style="border: 2px dashed #d1d5db; border-radius: 12px; padding: 40px; text-align: center; background: #f9fafb; cursor: pointer; transition: all 0.2s; position: relative;">
+                            <input type="file" id="proofFileInput" multiple accept="image/*,video/*" style="display: none;">
+                            <div style="font-size: 2.5em; margin-bottom: 10px;">📁</div>
+                            <p style="margin: 0 0 6px; font-weight: 700; color: #374151;">Drag files here or click to browse</p>
+                            <p style="margin: 0; font-size: 0.85em; color: #6b7280;">Supports: JPG, PNG, MP4, MOV (Max 100MB per file)</p>
+                            <div id="proofSelectedFiles" style="margin-top: 15px; font-size: 0.9em; color: #059669; font-weight: 600;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label for="proofDescription" style="display: block; margin-bottom: 8px; font-weight: 700; color: #374151;">Description <span style="color: #9ca3af; font-weight: 400;">(Optional)</span></label>
+                        <textarea id="proofDescription" placeholder="Add details about what these images/videos show..." style="width: 100%; padding: 12px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 0.9em; font-family: inherit; resize: vertical; min-height: 100px; box-sizing: border-box;" onfocus="this.style.borderColor='#8B1538'" onblur="this.style.borderColor='#e5e7eb'"></textarea>
+                    </div>
+
+                    <!-- Notes for Staff -->
+                    <div>
+                        <label for="proofNotes" style="display: block; margin-bottom: 8px; font-weight: 700; color: #374151;">Staff Notes <span style="color: #9ca3af; font-weight: 400;">(Optional)</span></label>
+                        <textarea id="proofNotes" placeholder="Add internal notes about the action taken..." style="width: 100%; padding: 12px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 0.9em; font-family: inherit; resize: vertical; min-height: 80px; box-sizing: border-box;" onfocus="this.style.borderColor='#8B1538'" onblur="this.style.borderColor='#e5e7eb'"></textarea>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
+                        <button type="button" onclick="closeProofModal()" class="btn btn-secondary">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-success" style="background: #10b981; color: white; display: flex; align-items: center; gap: 8px;">
+                            <span>✓</span> Upload Proof
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Existing Proof Gallery -->
+                <div id="existingProofGallery" style="margin-top: 30px; padding-top: 24px; border-top: 2px solid #e5e7eb;">
+                    <h3 style="margin: 0 0 16px; color: #374151; font-weight: 700;">Previously Uploaded Proof</h3>
+                    <div id="proofGalleryContent" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px;">
+                        <p style="color: #9ca3af; font-size: 0.9em; grid-column: 1/-1;">No proof uploaded yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Admin Dashboard (Hidden until login) -->
     <div id="adminDashboard" class="container" style="display: none;">
         <!-- Header -->
-        <header>
-            <div class="header-content">
-                <!-- Logo + Title -->
-                <div class="header-title">
-                    <div style="display:flex;align-items:center;gap:14px;">
-                        <img src="logo.png" alt="Barangay Danao Logo" class="header-logo" onerror="this.style.display='none'">
-                        <div>
-                            <h1> LGU Admin Portal</h1>
-                            <p class="subtitle">Barangay Danao, Antequera, Bohol</p>
-                        </div>
+        <header class="header">
+            <div class="header-left">
+                <img src="logo.png" alt="Barangay Danao Logo" class="logo" onerror="this.style.display='none'">
+                <div>
+                    <h1> Barangay Danao</h1>
+                    <p style="color: #8B1538; margin: 0; font-size: 0.85em; font-weight: 700; letter-spacing: 0.5px;">CITIZEN COMPLAINT & REPORT MANAGEMENT SYSTEM</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="header-stats">
+                    <div class="stat-card">
+                        <span class="stat-number" id="headerPending">0</span>
+                        <span class="stat-label">Pending</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="headerInProgress">0</span>
+                        <span class="stat-label">In Progress</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="headerResolved">0</span>
+                        <span class="stat-label">Resolved</span>
                     </div>
                 </div>
-
-                <!-- Header Right: Stats + Buttons -->
-                <div class="header-actions">
-                    <div class="header-stats">
-                        <div class="header-stat">
-                            <div class="header-stat-value" id="headerTotalReports">0</div>
-                            <div class="header-stat-label">Total</div>
-                        </div>
-                        <div class="header-stat">
-                            <div class="header-stat-value" id="headerActiveReports">0</div>
-                            <div class="header-stat-label">Active</div>
-                        </div>
-                        <div class="header-stat">
-                            <div class="header-stat-value" id="headerResolvedReports">0</div>
-                            <div class="header-stat-label">Resolved</div>
-                        </div>
-                    </div>
-                    <div class="header-btns">
-                        <div id="newReportsBadgeWrap" style="display:none;position:relative;">
-                            <span id="newReportsBadge" style="position:absolute;top:-6px;right:-6px;background:#ef4444;color:white;font-size:11px;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px;z-index:10;animation:pulse-badge 1.5s infinite;">0</span>
-                        </div>
-                        <div class="user-badge"><span></span><span id="currentUser">Admin</span></div>
-                        <span id="roleBadge" style="background:#8B1538;color:white;padding:3px 10px;border-radius:12px;font-size:0.78em;font-weight:600;" class="role-badge-desktop">🔑 Administrator</span>
-                        <a href="citizen-portal.html" class="btn btn-secondary citizen-btn"><span></span> <span class="btn-label">Citizen Portal</span></a>
-                        <button onclick="openNotificationSettings()" class="btn notif-btn" style="background:linear-gradient(135deg,#8B1538,#b91c4e);color:white;border:none;">
-                            <span></span> <span class="btn-label">Notifications</span>
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <button class="btn btn-secondary" onclick="toggleNotifications()">
+                        <span style="position: relative;">
+                             Notifications
+                            <span id="notificationBadge" style="position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.7em; font-weight: 700; display: none;">0</span>
+                        </span>
+                    </button>
+                    <div class="user-menu">
+                        <button class="btn btn-secondary" onclick="toggleUserMenu()" style="display: flex; align-items: center; gap: 8px;">
+                            <span> <span id="userMenuName">User</span> ▼</span>
                         </button>
-                        <button onclick="refreshReports()" id="refreshBtnPlain" class="btn btn-refresh">
-                            <span id="refreshIconPlain">↻</span> <span class="btn-label">Refresh</span>
-                        </button>
-                        <button onclick="logout()" class="btn btn-danger"><span></span> <span class="btn-label">Logout</span></button>
+                        <div id="userMenuDropdown" class="dropdown-menu" style="display: none; position: absolute; top: 100%; right: 0; background: white; border: 1px solid #e5e7eb; border-radius: 8px; min-width: 200px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1000;">
+                            <div style="padding: 16px; border-bottom: 1px solid #e5e7eb;">
+                                <p style="margin: 0; font-weight: 700; color: #1f2937;" id="userMenuFullName">User</p>
+                                <p style="margin: 4px 0 0; font-size: 0.85em; color: #6b7280;" id="userMenuRole">Staff</p>
+                            </div>
+                            <button onclick="logout()" style="width: 100%; text-align: left; padding: 12px 16px; border: none; background: none; cursor: pointer; color: #ef4444; font-weight: 600; font-size: 0.9em;">
+                                 Logout
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </header>
 
-        <!-- Navigation -->
+        <!-- Navigation Tabs -->
         <nav class="nav-tabs">
-            <button class="nav-tab active" onclick="switchTab('track')">
-                <span>📍</span><span class="nav-label"> Track Reports</span>
+            <button class="nav-tab active" onclick="window.switchTab('dashboard', event)">
+                 Dashboard
             </button>
-            <button class="nav-tab" onclick="switchTab('dashboard')">
-                <span>📊</span><span class="nav-label"> Dashboard</span>
+            <button class="nav-tab" onclick="window.switchTab('report', event)">
+                 Track Reports
             </button>
-            <button class="nav-tab" onclick="switchTab('analytics')">
-                <span>📈</span><span class="nav-label"> Analytics</span>
+            <button class="nav-tab" onclick="window.switchTab('analytics', event)">
+                 Analytics
             </button>
-            <button class="nav-tab" onclick="switchTab('manage')">
-                <span>⚙️</span><span class="nav-label"> Manage</span>
+            <button class="nav-tab" onclick="window.switchTab('manage', event)">
+                ⚙️ Manage
             </button>
-            <button class="nav-tab" onclick="switchTab('users')" id="usersTab" style="position:relative;">
-                <span>👥</span><span class="nav-label"> Users</span>
-                <span id="pendingApprovalsBadge" style="display:none;position:absolute;top:6px;right:4px;background:#ef4444;color:white;font-size:10px;font-weight:800;min-width:16px;height:16px;border-radius:8px;align-items:center;justify-content:center;padding:0 3px;animation:pulse-badge 1.5s infinite;">0</span>
+            <button class="nav-tab" onclick="window.switchTab('users', event)">
+                👥 Users <span id="usersBadge" style="background: #ef4444; color: white; border-radius: 12px; padding: 2px 8px; font-size: 0.75em; margin-left: 6px; display: none;">0</span>
             </button>
-            <button class="nav-tab" onclick="switchTab('album')">
-                <span>🖼️</span><span class="nav-label"> Album</span>
+            <button class="nav-tab" onclick="window.switchTab('album', event)">
+                 Album
             </button>
         </nav>
 
-        <!-- Staff Notice Banner -->
-        <div id="staffNoticeBanner" style="display:none;background:linear-gradient(135deg,#1e40af,#2563eb);color:white;padding:14px 20px;border-radius:10px;margin-bottom:20px;align-items:center;gap:14px;">
-            <span style="font-size:1.5em;"></span>
-            <div>
-                <strong style="font-size:1em;">Staff View-Only Mode</strong>
-                <p style="margin:3px 0 0;font-size:0.87em;opacity:0.9;">You can view and print reports. Contact an Administrator to make changes.</p>
-            </div>
-        </div>
-
-        <!-- Track Reports Tab -->
-        <div id="track" class="tab-content active">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title"> Track Reports</h2>
-                    <div style="display: flex; gap: 10px;">
-                        <button id="exportBtnTrack" class="btn btn-success" onclick="exportToExcel()">
-                            <span></span> Export to Excel
-                        </button>
-                        <button class="btn btn-secondary" onclick="displayReports()">
+        <!-- Main Content Container -->
+        <div class="main-container">
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
+                <div class="card" style="margin-bottom: 30px;">
+                    <div class="card-header">
+                        <h2 class="card-title">📊 Dashboard Overview</h2>
+                        <button class="btn btn-secondary" onclick="updateDashboard()" style="height: 40px;">
                             <span>↻</span> Refresh
                         </button>
                     </div>
-                </div>
 
-                <div class="filter-section">
-                    <input type="text" id="searchQuery" placeholder=" Search by ID, category, or location..." oninput="displayReports()">
-                    <select id="statusFilter" onchange="displayReports()">
-                        <option value="">All Status</option>
-                        <option value="Pending">Pending</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Resolved">Resolved</option>
-                    </select>
-                    <select id="categoryFilter" onchange="displayReports()">
-                        <option value="">All Categories</option>
-                        <option value="Waste Management">Waste Management</option>
-                        <option value="Infrastructure Damage">Infrastructure Damage</option>
-                        <option value="Environmental Violation">Environmental Violation</option>
-                        <option value="Public Safety">Public Safety</option>
-                        <option value="Water & Sanitation">Water & Sanitation</option>
-                        <option value="Street Lighting">Street Lighting</option>
-                        <option value="Other">Other</option>
-                    </select>
-                    <select id="priorityFilter" onchange="displayReports()">
-                        <option value="">All Priorities</option>
-                        <option value="High">High Priority</option>
-                        <option value="Medium">Medium Priority</option>
-                        <option value="Low">Low Priority</option>
-                    </select>
-                </div>
-
-                <div id="reportsList" class="reports-container"></div>
-            </div>
-        </div>
-
-        <!-- Dashboard Tab -->
-        <div id="dashboard" class="tab-content">
-            <!-- Statistics Cards -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: #fef3e6; color: #8B1538;">📊</div>
-                    <div class="stat-value" id="dashTotalReports">0</div>
-                    <div class="stat-label">Total Reports</div>
-                    <div class="stat-change positive">↑ 12% from last month</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;">⏳</div>
-                    <div class="stat-value" id="dashPendingCount">0</div>
-                    <div class="stat-label">Pending</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: #fef3e6; color: #D4AF37;">🔄</div>
-                    <div class="stat-value" id="dashInProgressCount">0</div>
-                    <div class="stat-label">In Progress</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: #d1fae5; color: #10b981;">✓</div>
-                    <div class="stat-value" id="dashResolvedCount">0</div>
-                    <div class="stat-label">Resolved</div>
-                    <div class="stat-change positive">↑ 85% resolution rate</div>
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div style="display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;">
-                <button id="exportBtnDashboard" class="btn btn-success" onclick="exportToExcel()">
-                    <span></span> Export to Excel
-                </button>
-                <button id="clearAllDataBtn" class="btn btn-danger" onclick="clearAllData()">
-                    <span>🗑️</span> Clear All Data
-                </button>
-            </div>
-
-            <!-- Interactive Map -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title"> Barangay Danao - All Reports</h2>
-                </div>
-                <div class="map-container">
-                    <div id="lguMap"></div>
-                </div>
-                <div class="map-legend">
-                    <strong>Legend:</strong>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 10px;">
-                        <div class="legend-item">
-                            <div class="legend-color" style="background: #ef4444;"></div>
-                            <span>High Priority</span>
+                    <!-- Key Metrics Row -->
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon" style="background: #fef3c7;">📋</div>
+                            <div>
+                                <div class="metric-value" id="dashTotalReports">0</div>
+                                <div class="metric-label">Total Reports</div>
+                            </div>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background: #f59e0b;"></div>
-                            <span>Medium Priority</span>
+                        <div class="metric-card">
+                            <div class="metric-icon" style="background: #dbeafe;">⏳</div>
+                            <div>
+                                <div class="metric-value" id="dashPendingCount">0</div>
+                                <div class="metric-label">Pending</div>
+                            </div>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background: #10b981;"></div>
-                            <span>Low Priority</span>
+                        <div class="metric-card">
+                            <div class="metric-icon" style="background: #fecaca;">⚡</div>
+                            <div>
+                                <div class="metric-value" id="dashInProgressCount">0</div>
+                                <div class="metric-label">In Progress</div>
+                            </div>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background: #6b7280;"></div>
-                            <span>Resolved</span>
+                        <div class="metric-card">
+                            <div class="metric-icon" style="background: #d1fae5;">✓</div>
+                            <div>
+                                <div class="metric-value" id="dashResolvedCount">0</div>
+                                <div class="metric-label">Resolved</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Category Distribution -->
-            <div class="chart-container">
-                <div class="card-header">
-                    <h3 class="card-title"> Reports by Category</h3>
-                </div>
-                <div id="categoryChart"></div>
-            </div>
-
-            <!-- Recent Activity -->
-            <div class="chart-container">
-                <div class="card-header">
-                    <h3 class="card-title"> Recent Activity</h3>
-                </div>
-                <div id="recentActivity"></div>
-            </div>
-        </div>
-
-        <!-- Analytics Tab -->
-        <div id="analytics" class="tab-content">
-            <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: #fef3e6; color: #8B1538;">⏱️</div>
-                    <div class="stat-value" id="avgResponseTime">N/A</div>
-                    <div class="stat-label">Avg Response Time</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: #fef3c7; color: #D4AF37;">📊</div>
-                    <div class="stat-value" id="resolutionRate">0%</div>
-                    <div class="stat-label">Resolution Rate</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: #d1fae5; color: #10b981;">👥</div>
-                    <div class="stat-value" id="activeUsers">0</div>
-                    <div class="stat-label">Active Citizens</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: #fee2e2; color: #8B1538;">🔥</div>
-                    <div class="stat-value" id="criticalIssues">0</div>
-                    <div class="stat-label">Critical Issues</div>
-                </div>
-            </div>
-
-            <!-- ===== REPORTS BY CATEGORY CHART ===== -->
-            <div class="card" style="margin-bottom: 30px;" id="cardCategoryChart">
-                <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
-                    <h3 class="card-title"> Reports by Category</h3>
-                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                        <button class="btn-print-chart" onclick="printChartCard('cardCategoryChart','Reports by Category')" title="Print this chart"> Print Chart</button>
-                        <div class="chart-type-switcher" id="categorySwitcher">
-                        <button class="chart-type-btn active" onclick="switchCategoryChart('bar')" data-type="bar" title="Bar Chart">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="10" width="4" height="12"/><rect x="9" y="6" width="4" height="16"/><rect x="16" y="2" width="4" height="20"/></svg>
-                            Bar
-                        </button>
-                        <button class="chart-type-btn" onclick="switchCategoryChart('horizontalBar')" data-type="horizontalBar" title="Horizontal Bar">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="3" width="12" height="4"/><rect x="2" y="10" width="18" height="4"/><rect x="2" y="17" width="8" height="4"/></svg>
-                            H-Bar
-                        </button>
-                        <button class="chart-type-btn" onclick="switchCategoryChart('pie')" data-type="pie" title="Pie Chart">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 1 10 10H12V2z"/><path d="M12 12L4.93 19.07A10 10 0 0 1 12 2v10z" opacity=".6"/><path d="M12 12v10a10 10 0 0 1-7.07-2.93L12 12z" opacity=".3"/></svg>
-                            Pie
-                        </button>
-                        <button class="chart-type-btn" onclick="switchCategoryChart('doughnut')" data-type="doughnut" title="Doughnut Chart">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>
-                            Donut
-                        </button>
-                        <button class="chart-type-btn" onclick="switchCategoryChart('polarArea')" data-type="polarArea" title="Polar Area">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2v10H2A10 10 0 0 1 12 2z"/><path d="M12 12h10a10 10 0 0 1-6.34 9.28L12 12z" opacity=".7"/><path d="M12 12l-4.66 9.28A10 10 0 0 1 2 12h10z" opacity=".4"/></svg>
-                            Polar
-                        </button>
+                <!-- Status Breakdown & Category Chart -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Status Distribution</h3>
+                        </div>
+                        <canvas id="statusChart" style="max-height: 250px;"></canvas>
                     </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Reports by Category</h3>
+                        </div>
+                        <canvas id="categoryChart" style="max-height: 250px;"></canvas>
                     </div>
                 </div>
-                <div style="position: relative; height: 380px; padding: 10px 0;">
-                    <canvas id="categoryChartCanvas"></canvas>
-                </div>
-                <div id="categoryChartLegend" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #f3f4f6;"></div>
-            </div>
 
-            <!-- ===== PENDING vs RESOLVED CHART ===== -->
-            <div class="card" style="margin-bottom: 30px;" id="cardStatusChart">
-                <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
-                    <h3 class="card-title">✅ Pending vs Resolved by Category</h3>
-                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                        <button class="btn-print-chart" onclick="printChartCard('cardStatusChart','Pending vs Resolved by Category')" title="Print this chart"> Print Chart</button>
-                        <div class="chart-type-switcher" id="statusSwitcher">
-                        <button class="chart-type-btn active" onclick="switchStatusChart('groupedBar')" data-type="groupedBar" title="Grouped Bar">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="8" width="3" height="14"/><rect x="6" y="12" width="3" height="10"/><rect x="11" y="6" width="3" height="16"/><rect x="15" y="10" width="3" height="12"/><rect x="20" y="4" width="3" height="18"/></svg>
-                            Grouped
-                        </button>
-                        <button class="chart-type-btn" onclick="switchStatusChart('stackedBar')" data-type="stackedBar" title="Stacked Bar">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="14" width="4" height="8"/><rect x="2" y="8" width="4" height="6" opacity=".6"/><rect x="9" y="10" width="4" height="12"/><rect x="9" y="4" width="4" height="6" opacity=".6"/><rect x="16" y="12" width="4" height="10"/><rect x="16" y="8" width="4" height="4" opacity=".6"/></svg>
-                            Stacked
-                        </button>
-                        <button class="chart-type-btn" onclick="switchStatusChart('pie')" data-type="pie" title="Pie">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 1 10 10H12V2z"/><path d="M12 12L4.93 19.07A10 10 0 0 1 12 2v10z" opacity=".6"/><path d="M12 12v10a10 10 0 0 1-7.07-2.93L12 12z" opacity=".3"/></svg>
-                            Pie
-                        </button>
-                        <button class="chart-type-btn" onclick="switchStatusChart('doughnut')" data-type="doughnut" title="Doughnut">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>
-                            Donut
-                        </button>
-                        <button class="chart-type-btn" onclick="switchStatusChart('line')" data-type="line" title="Line Chart">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="2,18 7,10 12,14 17,6 22,8"/></svg>
-                            Line
-                        </button>
+                <!-- Priority Distribution -->
+                <div class="card" style="margin-bottom: 30px;">
+                    <div class="card-header">
+                        <h3 class="card-title">🎯 Priority Breakdown</h3>
                     </div>
-                    </div>
-                </div>
-                <div style="position: relative; height: 380px; padding: 10px 0;">
-                    <canvas id="statusChartCanvas"></canvas>
-                </div>
-                <div id="statusChartSummary" style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px; padding-top: 15px; border-top: 1px solid #f3f4f6;"></div>
-            </div>
-
-            <!-- Priority Distribution -->
-            <div class="card" style="margin-bottom: 30px;">
-                <div class="card-header">
-                    <h3 class="card-title"> Priority Distribution</h3>
-                </div>
-                <div id="priorityChart"></div>
-            </div>
-
-            <!-- Top Locations -->
-            <div class="card" style="margin-bottom: 30px;">
-                <div class="card-header">
-                    <h3 class="card-title"> Top Issue Locations</h3>
-                </div>
-                <div id="locationHotspots"></div>
-            </div>
-
-            <!-- Trend Analysis -->
-            <div class="card" style="margin-bottom: 30px;" id="cardTrendChart">
-                <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
-                    <div>
-                        <h3 class="card-title"> Monthly Trend Analysis</h3>
-                        <p style="color:#6b7280; font-size:0.88em; margin-top:4px;">Last 12 months — total reports submitted per month</p>
-                    </div>
-                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                        <button class="btn-print-chart" onclick="printChartCard('cardTrendChart','Monthly Trend Analysis')" title="Print this chart"> Print Chart</button>
-                        <div class="chart-type-switcher" id="trendSwitcher">
-                        <button class="chart-type-btn active" onclick="switchTrendChart('line')" data-type="line" title="Line">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="2,18 7,10 12,14 17,6 22,8"/></svg>
-                            Line
-                        </button>
-                        <button class="chart-type-btn" onclick="switchTrendChart('bar')" data-type="bar" title="Bar">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="10" width="4" height="12"/><rect x="9" y="6" width="4" height="16"/><rect x="16" y="2" width="4" height="20"/></svg>
-                            Bar
-                        </button>
-                        <button class="chart-type-btn" onclick="switchTrendChart('stackedBar')" data-type="stackedBar" title="Stacked Bar">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="14" width="4" height="8"/><rect x="2" y="8" width="4" height="6" opacity=".6"/><rect x="9" y="10" width="4" height="12"/><rect x="9" y="4" width="4" height="6" opacity=".6"/><rect x="16" y="12" width="4" height="10"/><rect x="16" y="8" width="4" height="4" opacity=".6"/></svg>
-                            Stacked
-                        </button>
-                        <button class="chart-type-btn" onclick="switchTrendChart('area')" data-type="area" title="Area">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,18 7,10 12,14 17,6 22,8"/><line x1="2" y1="22" x2="22" y2="22"/></svg>
-                            Area
-                        </button>
-                        <button class="chart-type-btn" onclick="switchTrendChart('radar')" data-type="radar" title="Radar">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/><polygon points="12,6 18,9.5 18,14.5 12,18 6,14.5 6,9.5" opacity=".5"/></svg>
-                            Radar
-                        </button>
+                    <div style="display: flex; gap: 20px;">
+                        <div style="flex: 1; display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #ef4444;"></div>
+                            <div>
+                                <div style="font-weight: 700; color: #1f2937;">High Priority</div>
+                                <div id="highPriorityCount" style="font-size: 1.5em; font-weight: 800; color: #ef4444;">0</div>
+                            </div>
+                        </div>
+                        <div style="flex: 1; display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #f59e0b;"></div>
+                            <div>
+                                <div style="font-weight: 700; color: #1f2937;">Medium Priority</div>
+                                <div id="mediumPriorityCount" style="font-size: 1.5em; font-weight: 800; color: #f59e0b;">0</div>
+                            </div>
+                        </div>
+                        <div style="flex: 1; display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #3b82f6;"></div>
+                            <div>
+                                <div style="font-weight: 700; color: #1f2937;">Low Priority</div>
+                                <div id="lowPriorityCount" style="font-size: 1.5em; font-weight: 800; color: #3b82f6;">0</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div style="position: relative; height: 400px; padding: 10px 0;">
-                    <canvas id="trendChartCanvas"></canvas>
-                </div>
-                <!-- Month summary cards -->
-                <div id="trendMonthlySummary" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap:10px; margin-top:20px; padding-top:16px; border-top:1px solid #f3f4f6;"></div>
-            </div>
 
-            <!-- ===== PRINT ALL REPORTS BY MONTH ===== -->
-            <div class="card" style="margin-bottom: 30px; border: 2px solid #8B1538;">
-                <div class="card-header">
-                    <div>
-                        <h3 class="card-title"> Print All Reports by Month</h3>
-                        <p style="color:#6b7280; font-size:0.88em; margin-top:4px;">Select a month to print a full report summary including all charts</p>
+                <!-- Response Time Goals -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">⏱️ Avg. Response Times</h3>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                        <div style="padding: 16px; background: #f9fafb; border-radius: 8px; border-left: 4px solid #ef4444;">
+                            <p style="margin: 0 0 6px; color: #6b7280; font-size: 0.85em; font-weight: 600; text-transform: uppercase;">HIGH PRIORITY</p>
+                            <p style="margin: 0; font-size: 1.8em; font-weight: 800; color: #ef4444;" id="avgTimeHigh">-- hrs</p>
+                        </div>
+                        <div style="padding: 16px; background: #f9fafb; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                            <p style="margin: 0 0 6px; color: #6b7280; font-size: 0.85em; font-weight: 600; text-transform: uppercase;">MEDIUM PRIORITY</p>
+                            <p style="margin: 0; font-size: 1.8em; font-weight: 800; color: #f59e0b;" id="avgTimeMedium">-- hrs</p>
+                        </div>
+                        <div style="padding: 16px; background: #f9fafb; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                            <p style="margin: 0 0 6px; color: #6b7280; font-size: 0.85em; font-weight: 600; text-transform: uppercase;">LOW PRIORITY</p>
+                            <p style="margin: 0; font-size: 1.8em; font-weight: 800; color: #3b82f6;" id="avgTimeLow">-- hrs</p>
+                        </div>
                     </div>
                 </div>
-                <div style="display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; margin-bottom:20px;">
-                    <div>
-                        <label style="display:block; margin-bottom:6px; font-weight:600; color:#374151;">📅 Select Month</label>
-                        <select id="printMonthSelect" style="padding:10px 16px; border:2px solid #e5e7eb; border-radius:8px; font-size:14px; min-width:200px;">
-                            <option value="">-- Choose Month --</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-primary" onclick="printMonthlyReport()" style="height:44px;">
-                         Print Monthly Report
-                    </button>
-                    <button class="btn btn-secondary" onclick="printAllChartsReport()" style="height:44px;">
-                         Print All Charts
-                    </button>
-                </div>
-                <div id="printMonthPreview" style="background:#f9fafb; border-radius:8px; padding:16px; min-height:60px; color:#6b7280; font-size:0.9em; border:1px dashed #d1d5db;">
-                    Select a month above to preview the report count before printing.
-                </div>
             </div>
-        </div>
 
-        <!-- Manage Reports Tab -->
-        <div id="manage" class="tab-content">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">⚙️ Manage Reports</h2>
-                    <div style="display: flex; gap: 10px;">
-                        <button id="exportBtnManage" class="btn btn-success" onclick="exportToExcel()">
+            <!-- Report Tracking Tab -->
+            <div id="report" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title"> Track Reports</h2>
+                        <button id="exportBtn" class="btn btn-success" onclick="exportToExcel()">
                             <span></span> Export to Excel
                         </button>
                     </div>
-                </div>
-                <p style="color: #6b7280; margin-bottom: 20px;">Update report status and response times</p>
-                <div id="manageReportsList"></div>
-            </div>
-        </div>
+                    <p style="color: #6b7280; margin-bottom: 20px;">View all submitted reports and track their status</p>
 
-        <!-- Manage Users Tab -->
-        <div id="users" class="tab-content">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">👥 Manage Users</h2>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-secondary" onclick="displayUsersList()">
-                            <span>↻</span> Refresh
-                        </button>
-                    </div>
-                </div>
-                <p style="color: #6b7280; margin-bottom: 20px;">View and manage registered users</p>
-                <div id="usersList" class="users-container"></div>
-            </div>
-        </div>
-        <!-- Photo Album Tab -->
-        <div id="album" class="tab-content">
-            <div class="card" style="padding:0;overflow:hidden;">
-
-                <!-- Album Header -->
-                <div style="background:linear-gradient(135deg,#1f2937,#374151);padding:24px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
-                    <div style="display:flex;align-items:center;gap:14px;">
-                        <div style="width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:1.6em;">🖼️</div>
-                        <div>
-                            <h2 style="color:white;font-size:1.25em;font-weight:800;margin:0;">Proof Photo Album</h2>
-                            <p style="color:rgba(255,255,255,0.6);font-size:0.83em;margin:4px 0 0;">All reported photos categorized by issue type</p>
-                        </div>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                        <span id="albumPhotoCount" style="background:rgba(255,255,255,0.15);color:white;padding:5px 14px;border-radius:20px;font-size:0.83em;font-weight:700;">0 photos</span>
-                        <button onclick="refreshAlbum()" style="padding:8px 18px;background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);border-radius:8px;font-size:0.85em;font-weight:600;cursor:pointer;transition:all 0.2s;"
-                            onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
-                            ↻ Refresh
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Filters Bar -->
-                <div style="padding:18px 24px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
-
-                    <!-- Sort by Time -->
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        <span style="font-size:0.82em;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;">Sort:</span>
-                        <div style="display:flex;border:1.5px solid #e5e7eb;border-radius:8px;overflow:hidden;background:white;">
-                            <button id="albumSortDay" onclick="setAlbumSort('day')"
-                                style="padding:7px 16px;border:none;background:#8B1538;color:white;font-size:0.82em;font-weight:700;cursor:pointer;">Day</button>
-                            <button id="albumSortWeek" onclick="setAlbumSort('week')"
-                                style="padding:7px 16px;border:none;background:white;color:#374151;font-size:0.82em;font-weight:600;cursor:pointer;border-left:1px solid #e5e7eb;">Week</button>
-                            <button id="albumSortMonth" onclick="setAlbumSort('month')"
-                                style="padding:7px 16px;border:none;background:white;color:#374151;font-size:0.82em;font-weight:600;cursor:pointer;border-left:1px solid #e5e7eb;">Month</button>
-                        </div>
-                    </div>
-
-                    <!-- Category Filter -->
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        <span style="font-size:0.82em;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;">Category:</span>
-                        <select id="albumCategoryFilter" onchange="renderAlbum()"
-                            style="padding:7px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:0.85em;font-weight:600;color:#374151;background:white;outline:none;cursor:pointer;">
+                    <!-- Filters -->
+                    <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;">
+                        <select id="filterCategory" onchange="displayReports()" style="padding: 8px 12px; border: 1.5px solid #e5e7eb; border-radius: 6px; font-size: 0.9em;">
                             <option value="">All Categories</option>
                             <option value="Waste Management">🗑️ Waste Management</option>
                             <option value="Infrastructure Damage">🏗️ Infrastructure Damage</option>
@@ -613,24 +409,232 @@
                             <option value="Street Lighting">💡 Street Lighting</option>
                             <option value="Other">📌 Other</option>
                         </select>
+
+                        <select id="filterStatus" onchange="displayReports()" style="padding: 8px 12px; border: 1.5px solid #e5e7eb; border-radius: 6px; font-size: 0.9em;">
+                            <option value="">All Status</option>
+                            <option value="Pending">Pending</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Resolved">Resolved</option>
+                        </select>
+
+                        <select id="filterPriority" onchange="displayReports()" style="padding: 8px 12px; border: 1.5px solid #e5e7eb; border-radius: 6px; font-size: 0.9em;">
+                            <option value="">All Priorities</option>
+                            <option value="High">🔴 High</option>
+                            <option value="Medium">🟡 Medium</option>
+                            <option value="Low">🔵 Low</option>
+                        </select>
+
+                        <div style="flex: 1; min-width: 200px; position: relative;">
+                            <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #9ca3af;">🔍</span>
+                            <input type="text" id="searchInput" placeholder="Search by ID, location, or name..." onkeyup="displayReports()" style="width: 100%; padding: 8px 10px 8px 30px; border: 1.5px solid #e5e7eb; border-radius: 6px; font-size: 0.9em;" onfocus="this.style.borderColor='#8B1538'" onblur="this.style.borderColor='#e5e7eb'">
+                        </div>
+
+                        <button class="btn btn-secondary" onclick="displayReports()">
+                            <span>↻</span> Reset Filters
+                        </button>
                     </div>
 
-                    <!-- Search -->
-                    <div style="flex:1;min-width:180px;position:relative;">
-                        <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:0.9em;">🔍</span>
-                        <input id="albumSearch" type="text" placeholder="Search by location or report ID…"
-                            oninput="renderAlbum()"
-                            style="width:100%;padding:7px 10px 7px 30px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:0.85em;outline:none;box-sizing:border-box;"
-                            onfocus="this.style.borderColor='#8B1538'" onblur="this.style.borderColor='#e5e7eb'">
+                    <!-- Reports List -->
+                    <div id="reportsList"></div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analytics" class="tab-content">
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="card-header">
+                        <h2 class="card-title">📈 Analytics & Insights</h2>
+                        <button class="btn btn-secondary" onclick="updateAnalytics()">
+                            <span>↻</span> Refresh
+                        </button>
+                    </div>
+                    <p style="color: #6b7280; margin-bottom: 20px;">Comprehensive analytics and report trends</p>
+
+                    <!-- Charts Grid -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                        <div class="card" style="border: 1px solid #e5e7eb;">
+                            <div class="card-header" style="padding: 16px;">
+                                <h3 class="card-title" style="font-size: 1em;">Reports Over Time (Last 30 Days)</h3>
+                            </div>
+                            <canvas id="timelineChart" style="max-height: 250px; padding: 16px;"></canvas>
+                        </div>
+                        <div class="card" style="border: 1px solid #e5e7eb;">
+                            <div class="card-header" style="padding: 16px;">
+                                <h3 class="card-title" style="font-size: 1em;">Resolution Rate by Category</h3>
+                            </div>
+                            <canvas id="resolutionChart" style="max-height: 250px; padding: 16px;"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Response Time Goals -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                        <div class="card" style="border: 1px solid #e5e7eb;">
+                            <div class="card-header" style="padding: 16px;">
+                                <h3 class="card-title" style="font-size: 1em;">Avg. Response Time Trend</h3>
+                            </div>
+                            <canvas id="responseTimeChart" style="max-height: 250px; padding: 16px;"></canvas>
+                        </div>
+                        <div class="card" style="border: 1px solid #e5e7eb;">
+                            <div class="card-header" style="padding: 16px;">
+                                <h3 class="card-title" style="font-size: 1em;">Priority Distribution</h3>
+                            </div>
+                            <canvas id="priorityChart" style="max-height: 250px; padding: 16px;"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Performance Metrics -->
+                    <div class="card" style="border: 1px solid #e5e7eb;">
+                        <div class="card-header" style="padding: 16px;">
+                            <h3 class="card-title">Performance Metrics</h3>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; padding: 16px;">
+                            <div style="padding: 16px; background: #f0fdf4; border-radius: 8px; border-left: 4px solid #22c55e;">
+                                <p style="margin: 0 0 8px; color: #166534; font-size: 0.85em; font-weight: 700; text-transform: uppercase;">Resolution Rate</p>
+                                <p style="margin: 0; font-size: 2em; font-weight: 800; color: #22c55e;" id="resolutionRate">0%</p>
+                            </div>
+                            <div style="padding: 16px; background: #fef3c7; border-radius: 8px; border-left: 4px solid #eab308;">
+                                <p style="margin: 0 0 8px; color: #92400e; font-size: 0.85em; font-weight: 700; text-transform: uppercase;">Avg. Days to Resolve</p>
+                                <p style="margin: 0; font-size: 2em; font-weight: 800; color: #eab308;" id="avgDaysResolve">--</p>
+                            </div>
+                            <div style="padding: 16px; background: #dbeafe; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                                <p style="margin: 0 0 8px; color: #1e40af; font-size: 0.85em; font-weight: 700; text-transform: uppercase;">Most Common Issue</p>
+                                <p style="margin: 0; font-size: 1.5em; font-weight: 800; color: #3b82f6;" id="mostCommonCategory">--</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Album Grid -->
-                <div id="albumContent" style="padding:24px 20px;min-height:300px;"></div>
+                <!-- ===== PRINT ALL REPORTS BY MONTH ===== -->
+                <div class="card" style="margin-bottom: 30px; border: 2px solid #8B1538;">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title"> Print All Reports by Month</h3>
+                            <p style="color:#6b7280; font-size:0.88em; margin-top:4px;">Select a month to print a full report summary including all charts</p>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; margin-bottom:20px;">
+                        <div>
+                            <label style="display:block; margin-bottom:6px; font-weight:600; color:#374151;">📅 Select Month</label>
+                            <select id="printMonthSelect" style="padding:10px 16px; border:2px solid #e5e7eb; border-radius:8px; font-size:14px; min-width:200px;">
+                                <option value="">-- Choose Month --</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="printMonthlyReport()" style="height:44px;">
+                             Print Monthly Report
+                        </button>
+                        <button class="btn btn-secondary" onclick="printAllChartsReport()" style="height:44px;">
+                             Print All Charts
+                        </button>
+                    </div>
+                    <div id="printMonthPreview" style="background:#f9fafb; border-radius:8px; padding:16px; min-height:60px; color:#6b7280; font-size:0.9em; border:1px dashed #d1d5db;">
+                        Select a month above to preview the report count before printing.
+                    </div>
+                </div>
             </div>
-        </div>
 
-    </div><!-- end main-container -->
+            <!-- Manage Reports Tab -->
+            <div id="manage" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">⚙️ Manage Reports</h2>
+                        <div style="display: flex; gap: 10px;">
+                            <button id="exportBtnManage" class="btn btn-success" onclick="exportToExcel()">
+                                <span></span> Export to Excel
+                            </button>
+                        </div>
+                    </div>
+                    <p style="color: #6b7280; margin-bottom: 20px;">Update report status and response times</p>
+                    <div id="manageReportsList"></div>
+                </div>
+            </div>
+
+            <!-- Manage Users Tab -->
+            <div id="users" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">👥 Manage Users</h2>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-secondary" onclick="displayUsersList()">
+                                <span>↻</span> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    <p style="color: #6b7280; margin-bottom: 20px;">View and manage registered users</p>
+                    <div id="usersList" class="users-container"></div>
+                </div>
+            </div>
+            <!-- Photo Album Tab -->
+            <div id="album" class="tab-content">
+                <div class="card" style="padding:0;overflow:hidden;">
+
+                    <!-- Album Header -->
+                    <div style="background:linear-gradient(135deg,#1f2937,#374151);padding:24px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+                        <div style="display:flex;align-items:center;gap:14px;">
+                            <div style="width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:1.6em;">🖼️</div>
+                            <div>
+                                <h2 style="color:white;font-size:1.25em;font-weight:800;margin:0;">Proof Photo Album</h2>
+                                <p style="color:rgba(255,255,255,0.6);font-size:0.83em;margin:4px 0 0;">All reported photos categorized by issue type</p>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                            <span id="albumPhotoCount" style="background:rgba(255,255,255,0.15);color:white;padding:5px 14px;border-radius:20px;font-size:0.83em;font-weight:700;">0 photos</span>
+                            <button onclick="refreshAlbum()" style="padding:8px 18px;background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);border-radius:8px;font-size:0.85em;font-weight:600;cursor:pointer;transition:all 0.2s;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+                                ↻ Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filters Bar -->
+                    <div style="padding:18px 24px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
+
+                        <!-- Sort by Time -->
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span style="font-size:0.82em;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;">Sort:</span>
+                            <div style="display:flex;border:1.5px solid #e5e7eb;border-radius:8px;overflow:hidden;background:white;">
+                                <button id="albumSortDay" onclick="setAlbumSort('day')"
+                                    style="padding:7px 16px;border:none;background:#8B1538;color:white;font-size:0.82em;font-weight:700;cursor:pointer;">Day</button>
+                                <button id="albumSortWeek" onclick="setAlbumSort('week')"
+                                    style="padding:7px 16px;border:none;background:white;color:#374151;font-size:0.82em;font-weight:600;cursor:pointer;border-left:1px solid #e5e7eb;">Week</button>
+                                <button id="albumSortMonth" onclick="setAlbumSort('month')"
+                                    style="padding:7px 16px;border:none;background:white;color:#374151;font-size:0.82em;font-weight:600;cursor:pointer;border-left:1px solid #e5e7eb;">Month</button>
+                            </div>
+                        </div>
+
+                        <!-- Category Filter -->
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span style="font-size:0.82em;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;">Category:</span>
+                            <select id="albumCategoryFilter" onchange="renderAlbum()"
+                                style="padding:7px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:0.85em;font-weight:600;color:#374151;background:white;outline:none;cursor:pointer;">
+                                <option value="">All Categories</option>
+                                <option value="Waste Management">🗑️ Waste Management</option>
+                                <option value="Infrastructure Damage">🏗️ Infrastructure Damage</option>
+                                <option value="Environmental Violation">🌿 Environmental Violation</option>
+                                <option value="Public Safety">🚨 Public Safety</option>
+                                <option value="Water & Sanitation">💧 Water & Sanitation</option>
+                                <option value="Street Lighting">💡 Street Lighting</option>
+                                <option value="Other">📌 Other</option>
+                            </select>
+                        </div>
+
+                        <!-- Search -->
+                        <div style="flex:1;min-width:180px;position:relative;">
+                            <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:0.9em;">🔍</span>
+                            <input id="albumSearch" type="text" placeholder="Search by location or report ID…"
+                                oninput="renderAlbum()"
+                                style="width:100%;padding:7px 10px 7px 30px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:0.85em;outline:none;box-sizing:border-box;"
+                                onfocus="this.style.borderColor='#8B1538'" onblur="this.style.borderColor='#e5e7eb'">
+                        </div>
+                    </div>
+
+                    <!-- Album Grid -->
+                    <div id="albumContent" style="padding:24px 20px;min-height:300px;"></div>
+                </div>
+            </div>
+
+        </div><!-- end main-container -->
+
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
