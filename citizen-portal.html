@@ -26,7 +26,7 @@
 
         <!-- Welcome Message -->
         <div class="card" style="background: linear-gradient(135deg, #8B1538 0%, #D4AF37 100%); color: white; text-align: center;">
-            <h2 style="margin-bottom: 15px; font-size: 2em;"> Welcome, Citizen!</h2>
+            <h2 style="margin-bottom: 15px; font-size: 2em;">📢 Welcome, Citizen!</h2>
             <p style="font-size: 1.1em; line-height: 1.8;">
                 Help us improve our barangay by reporting issues in your community. 
                 Your reports make a difference in keeping Barangay Danao clean, safe, and well-maintained.
@@ -36,7 +36,7 @@
         <!-- Submit Report Section -->
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title"> Submit a Report</h2>
+                <h2 class="card-title">📝 Submit a Report</h2>
             </div>
 
             <div id="submitAlert" class="alert"></div>
@@ -64,11 +64,11 @@
                             <option value="">Select Category</option>
                             <option value="Waste Management"> Waste Management</option>
                             <option value="Infrastructure Damage"> Infrastructure Damage</option>
-                            <option value="Environmental Violation"> Environmental Violation</option>
+                            <option value="Environmental Violation">🌳 Environmental Violation</option>
                             <option value="Public Safety"> Public Safety</option>
                             <option value="Water & Sanitation"> Water & Sanitation</option>
                             <option value="Street Lighting"> Street Lighting</option>
-                            <option value="Dog Issues"> Dog Issues</option>
+                            <option value="Dog Issues">🐕 Dog Issues</option>
                             <option value="Other"> Other</option>
                         </select>
                     </div>
@@ -96,15 +96,15 @@
                         <label>Coordinates (Optional)</label>
                         <input type="text" id="coordinates" name="coordinates" placeholder="Click on map to set location" readonly style="background: #f9fafb;">
                         <small style="color: #6b7280; display: block; margin-top: 5px;">
-                            📍 Click anywhere on the map below to automatically fill in the coordinates
+                             Click anywhere on the map below to automatically fill in the coordinates
                         </small>
                     </div>
                 </div>
 
-                <!-- Proof Photos Upload -->
+                <!-- Proof Photos & Videos Upload -->
                 <div style="margin-top: 24px;">
                     <label style="display:block; font-weight:600; color:#374151; margin-bottom:10px; font-size:0.95em;">
-                        📸 Proof Photos <span style="font-weight:400; color:#9ca3af; font-size:0.88em;">(Optional — max 5 photos, 5MB each)</span>
+                        📸 Proof Photos & Videos <span style="font-weight:400; color:#9ca3af; font-size:0.88em;">(Optional — max 5 files, 50MB each)</span>
                     </label>
 
                     <!-- Drop Zone -->
@@ -114,31 +114,43 @@
                         ondrop="handlePhotoDrop(event)"
                         onclick="document.getElementById('photoInput').click()"
                         style="border:2px dashed #d1d5db; border-radius:12px; background:#fafafa; padding:28px 20px; text-align:center; cursor:pointer; transition:all 0.2s;">
-                        <div style="font-size:2em; margin-bottom:8px;"></div>
-                        <div style="font-weight:700; color:#374151; font-size:0.95em;">Drop photos here or click to upload</div>
-                        <div style="color:#9ca3af; font-size:0.82em; margin-top:4px;">Supports JPG, PNG, WEBP — up to 5MB per photo</div>
-                        <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoSelect(event)">
+                        <div style="font-size:2em; margin-bottom:8px;">📷</div>
+                        <div style="font-weight:700; color:#374151; font-size:0.95em;">Drop photos or videos here or click to upload</div>
+                        <div style="color:#9ca3af; font-size:0.82em; margin-top:4px;">
+                            <div>📷 Photos: JPG, PNG, WEBP — up to 50MB</div>
+                            <div>🎥 Videos: MP4, WebM, MOV — up to 50MB</div>
+                        </div>
+                        <input type="file" id="photoInput" accept="image/*,video/*" multiple style="display:none;" onchange="handlePhotoSelect(event)">
                         
-                        <!-- Camera Button for Mobile -->
-                        <button type="button" id="cameraBtn" onclick="event.stopPropagation(); document.getElementById('cameraInput').click();"
-                            style="margin-top:14px; padding:10px 18px; background:linear-gradient(135deg,#8B1538,#b91c4e); color:white; border:none; border-radius:8px; font-size:0.9em; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:all 0.2s;"
-                            onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 12px rgba(139,21,56,0.3)'"
-                            onmouseout="this.style.transform='';this.style.boxShadow=''">
-                             <span>Take Photo</span>
-                        </button>
+                        <!-- Camera & Video Buttons for Mobile -->
+                        <div style="display:flex; gap:10px; justify-content:center; margin-top:14px; flex-wrap:wrap;">
+                            <button type="button" id="cameraBtn" onclick="event.stopPropagation(); document.getElementById('cameraInput').click();"
+                                style="padding:10px 18px; background:linear-gradient(135deg,#8B1538,#b91c4e); color:white; border:none; border-radius:8px; font-size:0.9em; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:all 0.2s;"
+                                onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 12px rgba(139,21,56,0.3)'"
+                                onmouseout="this.style.transform='';this.style.boxShadow=''">
+                                📸 <span>Take Photo</span>
+                            </button>
+                            <button type="button" id="videoBtn" onclick="event.stopPropagation(); document.getElementById('videoInput').click();"
+                                style="padding:10px 18px; background:linear-gradient(135deg,#2563eb,#1d4ed8); color:white; border:none; border-radius:8px; font-size:0.9em; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:all 0.2s;"
+                                onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 12px rgba(37,99,235,0.3)'"
+                                onmouseout="this.style.transform='';this.style.boxShadow=''">
+                                🎥 <span>Record Video</span>
+                            </button>
+                        </div>
                         <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handlePhotoSelect(event)">
+                        <input type="file" id="videoInput" accept="video/*" capture="environment" style="display:none;" onchange="handlePhotoSelect(event)">
                     </div>
 
-                    <!-- Photo Preview Grid -->
+                    <!-- Media Preview Grid -->
                     <div id="photoPreviewGrid" style="display:none; flex-wrap:wrap; gap:10px; margin-top:12px;"></div>
                 </div>
 
                 <div style="margin-top: 30px;">
                     <button type="submit" class="btn btn-primary">
-                        <span>✓</span> Submit Report
+                        <span></span> Submit Report
                     </button>
                     <button type="reset" class="btn btn-secondary" style="margin-left: 10px;">
-                        <span>↻</span> Reset Form
+                        <span></span> Reset Form
                     </button>
                 </div>
             </form>
@@ -155,7 +167,7 @@
             </div>
             <div class="map-info">
                 <p style="color: #6b7280; margin-top: 15px;">
-                    <strong>📍 How to use:</strong> Click anywhere on the map to select the exact location of your report. 
+                    <strong> How to use:</strong> Click anywhere on the map to select the exact location of your report. 
                     The coordinates will automatically fill in the form above.
                 </p>
             </div>
@@ -177,7 +189,7 @@
             <div style="padding:24px 28px; background:#f9fafb; border-bottom:1px solid #e5e7eb;">
                 <div style="display:flex;gap:12px;flex-wrap:wrap;">
                     <div style="flex:1;min-width:220px;position:relative;">
-                        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:1.1em;color:#9ca3af;"></span>
+                        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:1.1em;color:#9ca3af;">🪪</span>
                         <input
                             id="trackIdInput"
                             type="text"
@@ -210,13 +222,13 @@
             <!-- Section Header -->
             <div style="background: linear-gradient(135deg, #1f2937 0%, #374151 100%); border-radius: 12px; padding: 24px 30px; margin-bottom: 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px;">
                 <div>
-                    <h2 style="color:white; font-size:1.5em; margin-bottom:6px;"> Community Monitor</h2>
+                    <h2 style="color:white; font-size:1.5em; margin-bottom:6px;">📡 Community Monitor</h2>
                     <p style="color:rgba(255,255,255,0.7); font-size:0.9em;">Live view of community reports in Barangay Danao — read only</p>
                 </div>
                 <div style="display:flex; gap:10px; align-items:center;">
                     <span id="citizenLastUpdated" style="color:rgba(255,255,255,0.5); font-size:0.8em;"></span>
                     <button onclick="refreshCitizenMonitor()" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); color:white; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
-                        ↻ Refresh
+                         Refresh
                     </button>
                 </div>
             </div>
@@ -224,22 +236,22 @@
             <!-- Stat Summary Cards -->
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:14px; margin-bottom:20px;">
                 <div class="citizen-stat-card" style="border-top-color:#8B1538;">
-                    <div style="font-size:1.8em;">📋</div>
+                    <div style="font-size:1.8em;"></div>
                     <div id="cit-total" class="citizen-stat-val" style="color:#8B1538;">0</div>
                     <div class="citizen-stat-lbl">Total Reports</div>
                 </div>
                 <div class="citizen-stat-card" style="border-top-color:#f59e0b;">
-                    <div style="font-size:1.8em;">🕐</div>
+                    <div style="font-size:1.8em;"></div>
                     <div id="cit-pending" class="citizen-stat-val" style="color:#f59e0b;">0</div>
                     <div class="citizen-stat-lbl">Pending</div>
                 </div>
                 <div class="citizen-stat-card" style="border-top-color:#2563eb;">
-                    <div style="font-size:1.8em;">🔄</div>
+                    <div style="font-size:1.8em;"></div>
                     <div id="cit-inprog" class="citizen-stat-val" style="color:#2563eb;">0</div>
                     <div class="citizen-stat-lbl">In Progress</div>
                 </div>
                 <div class="citizen-stat-card" style="border-top-color:#10b981;">
-                    <div style="font-size:1.8em;">✅</div>
+                    <div style="font-size:1.8em;"></div>
                     <div id="cit-resolved" class="citizen-stat-val" style="color:#10b981;">0</div>
                     <div class="citizen-stat-lbl">Resolved</div>
                 </div>
