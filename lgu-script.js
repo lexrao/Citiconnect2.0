@@ -2806,13 +2806,7 @@ function showNotifResultToast(results, report, newStatus) {
 async function updateReportStatus(reportId, newStatus) {
     console.log(`Attempting to update report ${reportId} to ${newStatus}`);
     
-    if (!isAdmin()) {
-        console.warn('Non-admin tried to update status');
-        alert('⛔ Access Denied\n\nOnly Administrators can update report status.');
-        displayManageReports();
-        return;
-    }
-    
+    // Both Admin and Staff can update status
     const report = AppState.reports.find(r => r.id === reportId);
     if (!report) {
         console.error(`Report ${reportId} not found`);
