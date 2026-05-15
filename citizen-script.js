@@ -418,9 +418,9 @@ async function handleReportSubmit(e) {
     // BLOCK submission if high priority but not verified
     if (priority === 'High' && !verification.verified) {
         alert(
-            '❌ CANNOT SUBMIT AS HIGH PRIORITY\n\n' +
+            ' CANNOT SUBMIT AS HIGH PRIORITY\n\n' +
             'Your report cannot be submitted as HIGH PRIORITY because the description does not contain urgent keywords.\n\n' +
-            '🚨 High priority is ONLY for emergencies like:\n' +
+            ' High priority is ONLY for emergencies like:\n' +
             '• Accidents, fires, floods\n' +
             '• Medical emergencies\n' +
             '• Crimes in progress\n' +
@@ -453,10 +453,10 @@ async function handleReportSubmit(e) {
     // Show confirmation for auto-verified urgent reports
     if (priority === 'High' && verification.autoVerified) {
         const confirm = window.confirm(
-            '✅ URGENT REPORT DETECTED\n\n' +
+            ' URGENT REPORT DETECTED\n\n' +
             'Your report has been verified as a genuine HIGH PRIORITY emergency.\n\n' +
             'Keywords detected: ' + verification.matchedKeywords.map(m => m.keyword).join(', ') + '\n\n' +
-            '🚨 This report will receive IMMEDIATE attention from the LGU.\n\n' +
+            ' This report will receive IMMEDIATE attention from the LGU.\n\n' +
             'Click OK to submit this urgent report.'
         );
         
@@ -476,6 +476,11 @@ async function handleReportSubmit(e) {
         priority: priority,
         status: 'Pending',
         date: new Date(),
+        statusDates: {
+            'Pending': new Date(),      // Set when report is submitted
+            'In Progress': null,
+            'Resolved': null
+        },
         coordinates: AppState.selectedCoordinates || parseCoordinates(document.getElementById('coordinates').value),
         verified: verification.verified,
         autoVerified: verification.autoVerified || false,
@@ -487,26 +492,18 @@ async function handleReportSubmit(e) {
     
     AppState.reportCounter++;
     
-    let dbSaveSuccess = true;
     try {
         await saveReportToDB(formData);
         await saveCounterToDB(AppState.reportCounter);
         console.log('Report saved to database');
     } catch (error) {
         console.error('Error saving to database:', error);
-        dbSaveSuccess = false;
-        showAlert('submitAlert', 'error',
-            '❌ Failed to submit your report.\n\n' +
-            'The system could not connect to the database. Please try again in a few moments, ' +
-            'or contact the Barangay office directly.\n\nError: ' + (error.message || error)
-        );
-        return; // Stop — don't show success message or reset the form
     }
     
-    let successMessage = `✅ Report submitted successfully!\n\nYour reference ID is: ${formData.id}`;
+    let successMessage = ` Report submitted successfully!\n\nYour reference ID is: ${formData.id}`;
     
     if (priority === 'High' && verification.autoVerified) {
-        successMessage += '\n\n🚨 URGENT: This report has been marked as HIGH PRIORITY and will receive immediate attention from the LGU!';
+        successMessage += '\n\n URGENT: This report has been marked as HIGH PRIORITY and will receive immediate attention from the LGU!';
     }
     
     successMessage += '\n\nThank you for helping improve our barangay!';
@@ -553,14 +550,33 @@ function handlePhotoDrop(event) {
 
 function processPhotoFiles(files) {
     const remaining = 5 - AppState.selectedPhotos.length;
-    if (remaining <= 0) { alert('Maximum 5 photos allowed.'); return; }
+    if (remaining <= 0) { alert('Maximum 5 files allowed.'); return; }
     files = files.slice(0, remaining);
 
     files.forEach(file => {
-        if (file.size > 5 * 1024 * 1024) { alert(`"${file.name}" exceeds 5MB limit and was skipped.`); return; }
+        const maxSize = 50 * 1024 * 1024; // 50MB limit
+        if (file.size > maxSize) { 
+            alert(`"${file.name}" exceeds 50MB limit and was skipped.`); 
+            return; 
+        }
+        
+        // Check if it's an image or video
+        const isImage = file.type.startsWith('image/');
+        const isVideo = file.type.startsWith('video/');
+        
+        if (!isImage && !isVideo) {
+            alert(`"${file.name}" is not a valid image or video and was skipped.`);
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = (e) => {
-            AppState.selectedPhotos.push({ name: file.name, dataUrl: e.target.result });
+            AppState.selectedPhotos.push({ 
+                name: file.name, 
+                dataUrl: e.target.result,
+                type: file.type,
+                isVideo: isVideo
+            });
             renderPhotoPreview();
         };
         reader.readAsDataURL(file);
@@ -582,12 +598,19 @@ function renderPhotoPreview() {
     }
     grid.style.display = 'flex';
     grid.innerHTML = AppState.selectedPhotos.map((p, i) => `
-        <div style="position:relative;width:100px;height:100px;border-radius:10px;overflow:hidden;border:2px solid #e5e7eb;flex-shrink:0;">
-            <img src="${p.dataUrl}" alt="${p.name}"
-                style="width:100%;height:100%;object-fit:cover;cursor:pointer;"
-                onclick="openPhotoLightbox('${p.dataUrl}','${p.name.replace(/'/g,"\\'")}')">
+        <div style="position:relative;width:100px;height:100px;border-radius:10px;overflow:hidden;border:2px solid ${p.isVideo ? '#2563eb' : '#e5e7eb'};flex-shrink:0;">
+            ${p.isVideo ? `
+                <video src="${p.dataUrl}" 
+                    style="width:100%;height:100%;object-fit:cover;cursor:pointer;background:#f3f4f6;"
+                    onclick="openMediaLightbox('${p.dataUrl.replace(/'/g,"\\'")}','${p.name.replace(/'/g,"\\'")}',true)"></video>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:32px;height:32px;background:rgba(255,255,255,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;pointer-events:none;">▶</div>
+            ` : `
+                <img src="${p.dataUrl}" alt="${p.name}"
+                    style="width:100%;height:100%;object-fit:cover;cursor:pointer;"
+                    onclick="openMediaLightbox('${p.dataUrl.replace(/'/g,"\\'")}','${p.name.replace(/'/g,"\\'")}',false)">
+            `}
             <button onclick="removePhoto(${i})"
-                style="position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,0.65);color:white;border:none;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">✕</button>
+                style="position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,0.65);color:white;border:none;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;z-index:10;">✕</button>
             <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);color:white;font-size:9px;padding:2px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</div>
         </div>
     `).join('') + (AppState.selectedPhotos.length < 5 ? `
@@ -595,30 +618,41 @@ function renderPhotoPreview() {
             style="width:100px;height:100px;border-radius:10px;border:2px dashed #d1d5db;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#9ca3af;font-size:0.75em;gap:4px;flex-shrink:0;transition:all 0.2s;"
             onmouseover="this.style.borderColor='#8B1538';this.style.color='#8B1538'"
             onmouseout="this.style.borderColor='#d1d5db';this.style.color='#9ca3af'">
-            <span style="font-size:1.5em;">＋</span><span>Add Photo</span>
+            <span style="font-size:1.5em;">＋</span><span>Add File</span>
         </div>` : '');
 }
 
-function openPhotoLightbox(dataUrl, name) {
-    const existing = document.getElementById('photoLightbox');
+function openMediaLightbox(src, name, isVideo) {
+    const existing = document.getElementById('mediaLightbox');
     if (existing) existing.remove();
     const lb = document.createElement('div');
-    lb.id = 'photoLightbox';
-    lb.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn 0.2s;';
+    lb.id = 'mediaLightbox';
+    lb.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn 0.2s;cursor:zoom-out;';
+    
+    const mediaHTML = isVideo ? 
+        `<video src="${src}" controls autoplay style="max-width:90vw;max-height:85vh;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,0.5);"></video>` :
+        `<img src="${src}" alt="${name}" style="max-width:90vw;max-height:85vh;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,0.5);">`;
+    
     lb.innerHTML = `
         <div style="position:relative;max-width:90vw;max-height:90vh;">
-            <img src="${dataUrl}" alt="${name}" style="max-width:100%;max-height:85vh;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+            ${mediaHTML}
             <div style="text-align:center;color:rgba(255,255,255,0.7);font-size:13px;margin-top:10px;">${name}</div>
-            <button onclick="document.getElementById('photoLightbox').remove()"
-                style="position:absolute;top:-14px;right:-14px;width:32px;height:32px;border-radius:50%;background:#ef4444;color:white;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+            <button onclick="event.stopPropagation();document.getElementById('mediaLightbox').remove()"
+                style="position:absolute;top:-14px;right:-14px;width:32px;height:32px;border-radius:50%;background:#ef4444;color:white;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;">✕</button>
         </div>`;
     lb.addEventListener('click', e => { if (e.target === lb) lb.remove(); });
     document.body.appendChild(lb);
 }
 
+// Keep old function for backward compatibility
+function openPhotoLightbox(dataUrl, name) {
+    openMediaLightbox(dataUrl, name, false);
+}
+
 window.handlePhotoSelect  = handlePhotoSelect;
 window.handlePhotoDrop    = handlePhotoDrop;
 window.removePhoto        = removePhoto;
+window.openMediaLightbox  = openMediaLightbox;
 window.openPhotoLightbox  = openPhotoLightbox;
 
 // ===================================
@@ -647,7 +681,7 @@ async function trackMyReport() {
     // Animated loading state
     resultEl.innerHTML = `
     <div style="text-align:center;padding:40px 20px;color:#6b7280;">
-        <div style="font-size:2.5em;margin-bottom:12px;animation:spin 1s linear infinite;display:inline-block;">🔄</div>
+        <div style="font-size:2.5em;margin-bottom:12px;animation:spin 1s linear infinite;display:inline-block;"></div>
         <div style="font-weight:700;font-size:1em;color:#374151;">Searching Firestore…</div>
         <div style="font-size:0.85em;margin-top:4px;color:#9ca3af;">Looking up report <span style="font-family:monospace;font-weight:700;color:#8B1538;">${rawId}</span></div>
     </div>
@@ -659,12 +693,12 @@ async function trackMyReport() {
     if (!report) {
         resultEl.innerHTML = `
         <div style="padding:24px;background:#fef2f2;border-radius:14px;border:2px solid #fecaca;display:flex;align-items:flex-start;gap:16px;">
-            <div style="font-size:2em;line-height:1;flex-shrink:0;">❌</div>
+            <div style="font-size:2em;line-height:1;flex-shrink:0;"></div>
             <div>
                 <div style="font-weight:800;color:#991b1b;font-size:1.05em;margin-bottom:6px;">Report Not Found</div>
                 <div style="color:#b91c1c;font-size:0.9em;margin-bottom:8px;">No report found with ID <strong style="font-family:monospace;">${rawId}</strong>.</div>
                 <div style="color:#b91c1c;font-size:0.83em;background:#fee2e2;padding:8px 12px;border-radius:8px;">
-                    💡 Check the reference ID from your submission confirmation.<br>Format: <strong>CR-2024-001</strong>
+                     Check the reference ID from your submission confirmation.<br>Format: <strong>CR-2024-001</strong>
                 </div>
             </div>
         </div>`;
@@ -672,16 +706,16 @@ async function trackMyReport() {
     }
 
     const statusMeta = {
-        'Pending':     { color: '#f59e0b', bg: '#fef3c7', barBg: '#fffbeb', icon: '🕐', label: 'Pending Review',  desc: 'Your report has been received and is in the queue. Our team will review it shortly.' },
-        'In Progress': { color: '#2563eb', bg: '#dbeafe', barBg: '#eff6ff', icon: '🔧', label: 'Being Actioned',  desc: 'Our barangay team is actively working on your concern. We are on it!' },
-        'Resolved':    { color: '#10b981', bg: '#d1fae5', barBg: '#f0fdf4', icon: '✅', label: 'Resolved',        desc: 'This report has been successfully resolved. Thank you for making Barangay Danao better!' },
+        'Pending':     { color: '#f59e0b', bg: '#fef3c7', barBg: '#fffbeb', icon: '', label: 'Pending Review',  desc: 'Your report has been received and is in the queue. Our team will review it shortly.' },
+        'In Progress': { color: '#2563eb', bg: '#dbeafe', barBg: '#eff6ff', icon: '', label: 'Being Actioned',  desc: 'Our barangay team is actively working on your concern. We are on it!' },
+        'Resolved':    { color: '#10b981', bg: '#d1fae5', barBg: '#f0fdf4', icon: '', label: 'Resolved',        desc: 'This report has been successfully resolved. Thank you for making Barangay Danao better!' },
     };
     const meta = statusMeta[report.status] || statusMeta['Pending'];
 
     const steps = [
-        { key: 'Pending',     icon: '📥', label: 'Received',    desc: 'Report submitted' },
-        { key: 'In Progress', icon: '🔧', label: 'In Progress', desc: 'Team working on it' },
-        { key: 'Resolved',    icon: '✅', label: 'Resolved',    desc: 'Issue fixed' },
+        { key: 'Pending',     icon: '', label: 'Received',    desc: 'Report submitted' },
+        { key: 'In Progress', icon: '', label: 'In Progress', desc: 'Team working on it' },
+        { key: 'Resolved',    icon: '', label: 'Resolved',    desc: 'Issue fixed' },
     ];
     const statusOrder = { 'Pending': 0, 'In Progress': 1, 'Resolved': 2 };
     const currentIdx  = statusOrder[report.status] ?? 0;
@@ -690,6 +724,11 @@ async function trackMyReport() {
         const done   = i <= currentIdx;
         const active = i === currentIdx;
         const lineColor = i < currentIdx ? meta.color : '#e5e7eb';
+        
+        // Get the date for this status
+        const statusDate = report.statusDates?.[step.key];
+        const dateStr = statusDate ? new Date(statusDate).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+        
         return `
         <div style="display:flex;flex-direction:column;align-items:center;flex:1;position:relative;">
             ${i > 0 ? `<div style="position:absolute;top:19px;right:50%;width:100%;height:3px;background:${lineColor};z-index:0;transition:background 0.5s;"></div>` : ''}
@@ -699,6 +738,7 @@ async function trackMyReport() {
             </div>
             <div style="margin-top:8px;font-size:12px;font-weight:${active ? '800' : '500'};color:${done ? meta.color : '#9ca3af'};text-align:center;line-height:1.3;">
                 ${step.label}
+                <div style="font-size:10px;color:${done ? meta.color : '#9ca3af'};opacity:0.8;margin-top:2px;font-weight:600;"> ${dateStr}</div>
                 ${active ? `<div style="font-size:10px;color:${meta.color};opacity:0.8;margin-top:2px;">${step.desc}</div>` : ''}
             </div>
         </div>`;
@@ -721,19 +761,19 @@ async function trackMyReport() {
             <div style="text-align:right;flex-shrink:0;">
                 <div style="font-size:10px;color:#9ca3af;font-weight:700;text-transform:uppercase;letter-spacing:.6px;">Reference ID</div>
                 <div style="font-size:1.15em;font-weight:800;color:#1f2937;font-family:'Courier New',monospace;margin-top:2px;">${report.id}</div>
-                <div style="font-size:11px;color:#9ca3af;margin-top:4px;">🔴 Live from Firestore</div>
+                <div style="font-size:11px;color:#9ca3af;margin-top:4px;"> Live from Firestore</div>
             </div>
         </div>
 
         <!-- Progress Timeline -->
         <div style="background:${meta.barBg};padding:24px 28px;border-bottom:1px solid #f3f4f6;">
-            <div style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.7px;margin-bottom:18px;">📊 Progress Timeline</div>
+            <div style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.7px;margin-bottom:18px;"> Progress Timeline</div>
             <div style="display:flex;align-items:flex-start;position:relative;">${timelineHTML}</div>
         </div>
 
         <!-- Report Details Grid -->
         <div style="padding:22px 24px;background:white;">
-            <div style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px;">📋 Report Details</div>
+            <div style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px;"> Report Details</div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;">
                 <div style="background:#f9fafb;border-radius:10px;padding:12px 15px;">
                     <div style="font-size:10px;color:#9ca3af;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Category</div>
@@ -741,20 +781,20 @@ async function trackMyReport() {
                 </div>
                 <div style="background:#f9fafb;border-radius:10px;padding:12px 15px;">
                     <div style="font-size:10px;color:#9ca3af;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Location</div>
-                    <div style="font-weight:700;color:#1f2937;font-size:0.92em;">📍 ${report.location}</div>
+                    <div style="font-weight:700;color:#1f2937;font-size:0.92em;"> ${report.location}</div>
                 </div>
                 <div style="background:#f9fafb;border-radius:10px;padding:12px 15px;">
                     <div style="font-size:10px;color:#9ca3af;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Date Submitted</div>
-                    <div style="font-weight:700;color:#1f2937;font-size:0.92em;">📅 ${report.date.toLocaleDateString('en-PH', { year:'numeric', month:'short', day:'numeric' })}</div>
+                    <div style="font-weight:700;color:#1f2937;font-size:0.92em;"> ${report.date.toLocaleDateString('en-PH', { year:'numeric', month:'short', day:'numeric' })}</div>
                 </div>
                 <div style="background:${priorityBg};border-radius:10px;padding:12px 15px;border:1px solid ${priorityColor}22;">
                     <div style="font-size:10px;color:#9ca3af;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Priority</div>
-                    <div style="font-weight:800;color:${priorityColor};font-size:0.92em;">⚡ ${report.priority}</div>
+                    <div style="font-weight:800;color:${priorityColor};font-size:0.92em;"> ${report.priority}</div>
                 </div>
                 ${report.responseTime != null ? `
                 <div style="background:#f0fdf4;border-radius:10px;padding:12px 15px;border:1px solid #bbf7d0;">
                     <div style="font-size:10px;color:#059669;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Response Time</div>
-                    <div style="font-weight:800;color:#065f46;font-size:0.92em;">⏱️ ${report.responseTime} day${report.responseTime !== 1 ? 's' : ''}</div>
+                    <div style="font-weight:800;color:#065f46;font-size:0.92em;"> ${report.responseTime} day${report.responseTime !== 1 ? 's' : ''}</div>
                 </div>` : ''}
             </div>
 
@@ -767,10 +807,10 @@ async function trackMyReport() {
 
         <!-- Footer -->
         <div style="padding:14px 24px;background:#f9fafb;border-top:1px solid #f3f4f6;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-            <span style="font-size:0.8em;color:#9ca3af;">💬 For urgent concerns, visit or call the Barangay Hall directly.</span>
+            <span style="font-size:0.8em;color:#9ca3af;"> For urgent concerns, visit or call the Barangay Hall directly.</span>
             <button onclick="trackMyReport()" style="padding:6px 16px;background:white;border:1.5px solid ${meta.color};color:${meta.color};border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;"
                 onmouseover="this.style.background='${meta.bg}'" onmouseout="this.style.background='white'">
-                ↻ Refresh Status
+                 Refresh Status
             </button>
         </div>
     </div>`;
@@ -790,7 +830,7 @@ async function sendSubmissionConfirmation(report) {
     const emailEnabled = config.emailjsEnabled && config.emailjsPublicKey && config.emailjsServiceId && config.emailjsTemplateId;
 
     const smsMsg =
-        `📥 Barangay Danao, Antequera, Bohol\n` +
+        ` Barangay Danao, Antequera, Bohol\n` +
         `Your report (${report.id}) has been RECEIVED.\n` +
         `Category: ${report.category}\n` +
         `We will notify you of any status updates.\n` +
@@ -807,7 +847,7 @@ async function sendSubmissionConfirmation(report) {
         `Category     : ${report.category}\n` +
         `Location     : ${report.location}\n` +
         `Priority     : ${report.priority}\n` +
-        `Status       : 🕐 Pending Review\n` +
+        `Status       :  Pending Review\n` +
         `Submitted On : ${new Date().toLocaleString('en-PH')}\n\n` +
         `Your report has been logged and will be reviewed by our barangay team. ` +
         `You will receive updates when the status changes to In Progress or Resolved.\n\n` +
@@ -892,14 +932,14 @@ function parseCoordinates(coordString) {
 // ===================================
 
 const CITIZEN_CATEGORY_META = {
-    'Waste Management':        { emoji: '🗑️', color: '#ef4444' },
-    'Infrastructure Damage':   { emoji: '🏗️', color: '#f59e0b' },
+    'Waste Management':        { emoji: '', color: '#ef4444' },
+    'Infrastructure Damage':   { emoji: '', color: '#f59e0b' },
     'Environmental Violation': { emoji: '🌳', color: '#10b981' },
-    'Public Safety':           { emoji: '🚨', color: '#8B1538' },
-    'Water & Sanitation':      { emoji: '💧', color: '#2563eb' },
-    'Street Lighting':         { emoji: '💡', color: '#D4AF37' },
+    'Public Safety':           { emoji: '', color: '#8B1538' },
+    'Water & Sanitation':      { emoji: '', color: '#2563eb' },
+    'Street Lighting':         { emoji: '', color: '#D4AF37' },
     'Dog Issues':              { emoji: '🐕', color: '#a16207' },
-    'Other':                   { emoji: '📋', color: '#6b7280' }
+    'Other':                   { emoji: '', color: '#6b7280' }
 };
 
 
@@ -910,10 +950,10 @@ const CitizenMonitor = {
     trendChart: null
 };
 
-function getLast8MonthsCitizen() {
+function getLast12MonthsCitizen() {
     const months = [];
     const now = new Date();
-    for (let i = 7; i >= 0; i--) {
+    for (let i = 11; i >= 0; i--) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
         months.push({
             label: d.toLocaleString('default', { month: 'short', year: '2-digit' }),
@@ -1044,9 +1084,9 @@ function renderCitizenStatusChart(reports) {
     if (legendEl) {
         const resRate = total > 0 ? ((resolved / total) * 100).toFixed(0) : 0;
         const items = [
-            { label: 'Pending',     count: pending,  color: '#f59e0b', bg: '#fef3c7', icon: '🕐' },
-            { label: 'In Progress', count: inProg,   color: '#2563eb', bg: '#dbeafe', icon: '🔄' },
-            { label: 'Resolved',    count: resolved, color: '#10b981', bg: '#d1fae5', icon: '✅' }
+            { label: 'Pending',     count: pending,  color: '#f59e0b', bg: '#fef3c7', icon: '' },
+            { label: 'In Progress', count: inProg,   color: '#2563eb', bg: '#dbeafe', icon: '' },
+            { label: 'Resolved',    count: resolved, color: '#10b981', bg: '#d1fae5', icon: '' }
         ];
         legendEl.innerHTML = items.map(it => {
             const pct = total > 0 ? ((it.count / total) * 100).toFixed(1) : '0.0';
@@ -1054,14 +1094,14 @@ function renderCitizenStatusChart(reports) {
                 + it.icon + ' ' + it.label + ': ' + it.count
                 + ' <span style="opacity:0.6;">(' + pct + '%)</span></span>';
         }).join('')
-        + '<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:14px;background:#f3f4f6;font-size:12px;font-weight:700;color:#374151;">📊 Resolution Rate: ' + resRate + '%</span>';
+        + '<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:14px;background:#f3f4f6;font-size:12px;font-weight:700;color:#374151;"> Resolution Rate: ' + resRate + '%</span>';
     }
 }
 
 function renderCitizenTrendChart(reports) {
     const canvas = document.getElementById('citTrendChart');
     if (!canvas) return;
-    const months = getLast8MonthsCitizen();
+    const months = getLast12MonthsCitizen();
 
     const totals = months.map((m) => {
         return reports.filter(r => r.date.getFullYear() === m.year && r.date.getMonth() === m.month).length;
