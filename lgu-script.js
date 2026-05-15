@@ -153,7 +153,7 @@ function applyRoleRestrictions() {
     // Role badge in header
     const roleBadge = document.getElementById('roleBadge');
     if (roleBadge) {
-        roleBadge.textContent = admin ? ' Administrator' : ' Staff (View Only)';
+        roleBadge.textContent = admin ? ' Administrator' : '👁️ Staff (View Only)';
         roleBadge.style.background = admin ? '#8B1538' : '#2563eb';
         roleBadge.style.color = 'white';
         roleBadge.style.padding = '3px 12px';
@@ -217,7 +217,7 @@ function handleLogin(e) {
         }
         
         // Show success message
-        showLoginAlert('✓ Login successful! Welcome, ' + username, 'success');
+        showLoginAlert(' Login successful! Welcome, ' + username, 'success');
         
         // Redirect to dashboard after short delay
         setTimeout(() => {
@@ -295,7 +295,7 @@ function handleRegister(e) {
     updatePendingApprovalsBadge();
     
     // Show success message
-    showRegisterAlert('✓ Registration submitted! Your account is awaiting admin approval. You will be able to login once approved.', 'success');
+    showRegisterAlert(' Registration submitted! Your account is awaiting admin approval. You will be able to login once approved.', 'success');
     
     // Redirect to login after delay
     setTimeout(() => {
@@ -426,15 +426,15 @@ function displayUsersList() {
                     </div>
                     <div class="user-username">@${user.username}</div>
                     <div class="user-meta">
-                        <span class="user-stat"> ${user.email}</span>
-                        <span class="user-stat"> ${user.position}</span>
-                        <span class="user-stat"> ${user.role}</span>
+                        <span class="user-stat">📧 ${user.email}</span>
+                        <span class="user-stat">💼 ${user.position}</span>
+                        <span class="user-stat">🎭 ${user.role}</span>
                         <span class="user-stat"> Applied: ${new Date(user.createdDate).toLocaleDateString()}</span>
                     </div>
                 </div>
                 <div class="user-actions" style="gap:8px;">
                     <button class="btn btn-success" style="padding:8px 16px;font-size:0.85em;display:flex;align-items:center;gap:5px;" onclick="approveUser('${user.username}')">
-                        ✅ Approve
+                         Approve
                     </button>
                     <button class="btn btn-danger" style="padding:8px 16px;font-size:0.85em;display:flex;align-items:center;gap:5px;" onclick="rejectUser('${user.username}')">
                         ✗ Reject
@@ -446,14 +446,14 @@ function displayUsersList() {
     } else {
         html += `
         <div style="margin-bottom:20px;padding:14px 18px;background:#f0fdf4;border-radius:10px;border-left:4px solid #10b981;display:flex;align-items:center;gap:10px;">
-            <span style="font-size:1.3em;">✅</span>
+            <span style="font-size:1.3em;"></span>
             <span style="color:#065f46;font-weight:600;font-size:0.9em;">No pending approvals — all accounts are up to date.</span>
         </div>`;
     }
 
     // ---- ACTIVE USERS SECTION ----
     if (activeUsers.length > 0 || otherUsers.length > 0) {
-        html += `<div style="margin-bottom:12px;"><h3 style="color:#374151;font-size:1.05em;font-weight:700;margin-bottom:14px;">👥 Active Accounts (${activeUsers.length})</h3>`;
+        html += `<div style="margin-bottom:12px;"><h3 style="color:#374151;font-size:1.05em;font-weight:700;margin-bottom:14px;"> Active Accounts (${activeUsers.length})</h3>`;
         html += [...activeUsers, ...otherUsers].map(user => {
             const statusColor = user.status === 'Active' ? '#10b981' : user.status === 'Rejected' ? '#ef4444' : '#f59e0b';
             const statusLabel = user.status === 'Active' ? '● Active' : user.status === 'Rejected' ? '✗ Rejected' : user.status;
@@ -464,8 +464,8 @@ function displayUsersList() {
                     <div class="user-name">${user.fullName}</div>
                     <div class="user-username">@${user.username}</div>
                     <div class="user-meta">
-                        <span class="user-stat"> ${user.email}</span>
-                        <span class="user-stat"> ${user.position}</span>
+                        <span class="user-stat">📧 ${user.email}</span>
+                        <span class="user-stat">💼 ${user.position}</span>
                         <span class="user-stat"> Joined: ${new Date(user.createdDate).toLocaleDateString()}</span>
                     </div>
                 </div>
@@ -476,7 +476,7 @@ function displayUsersList() {
                     <button class="btn btn-danger" style="padding:5px 12px;font-size:0.8em;margin-top:6px;" onclick="deleteUser('${user.username}')">
                          Delete
                     </button>` : isAdmin() && user.username === AuthState.currentUser ? `
-                    <small style="color:#9ca3af;font-size:0.75em;margin-top:6px;display:block;"> Current user</small>` : ''}
+                    <small style="color:#9ca3af;font-size:0.75em;margin-top:6px;display:block;">🔒 Current user</small>` : ''}
                 </div>
             </div>`;
         }).join('');
@@ -484,7 +484,7 @@ function displayUsersList() {
     }
 
     if (AuthState.users.length === 0) {
-        html = `<div class="empty-state"><div class="empty-state-icon">👥</div><p>No users registered yet</p></div>`;
+        html = `<div class="empty-state"><div class="empty-state-icon"></div><p>No users registered yet</p></div>`;
     }
 
     container.innerHTML = html;
@@ -517,7 +517,7 @@ function showApprovalModal(user, action) {
     overlay.innerHTML = `
     <div style="background:white;border-radius:16px;padding:36px;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);">
         <div style="text-align:center;margin-bottom:24px;">
-            <div style="font-size:3em;margin-bottom:10px;">${isApprove ? '✅' : '✗'}</div>
+            <div style="font-size:3em;margin-bottom:10px;">${isApprove ? '' : '✗'}</div>
             <h2 style="color:${isApprove ? '#065f46' : '#991b1b'};font-size:1.4em;font-weight:700;margin-bottom:6px;">
                 ${isApprove ? 'Approve Account' : 'Reject Account'}
             </h2>
@@ -549,7 +549,7 @@ function showApprovalModal(user, action) {
 
         <div style="display:flex;gap:12px;">
             <button onclick="confirmApprovalAction('${user.username}','${action}')" style="flex:1;padding:12px;border:none;border-radius:8px;background:${isApprove ? 'linear-gradient(135deg,#10b981,#059669)' : 'linear-gradient(135deg,#ef4444,#dc2626)'};color:white;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">
-                ${isApprove ? '✅ Yes, Approve' : '✗ Yes, Reject'}
+                ${isApprove ? ' Yes, Approve' : '✗ Yes, Reject'}
             </button>
             <button onclick="closeApprovalModal()" style="flex:1;padding:12px;border:2px solid #e5e7eb;border-radius:8px;background:white;color:#374151;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
                 Cancel
@@ -587,7 +587,7 @@ function confirmApprovalAction(username, action) {
     const toast = document.createElement('div');
     toast.className = 'new-report-toast';
     toast.style.borderLeftColor = isApprove ? '#10b981' : '#ef4444';
-    toast.innerHTML = (isApprove ? '✅' : '✗') + ' <span><strong>' + user.fullName + '</strong> has been ' + (isApprove ? 'approved and can now log in.' : 'rejected.') + '</span>';
+    toast.innerHTML = (isApprove ? '' : '✗') + ' <span><strong>' + user.fullName + '</strong> has been ' + (isApprove ? 'approved and can now log in.' : 'rejected.') + '</span>';
     document.body.appendChild(toast);
     setTimeout(() => { if (toast.parentNode) toast.remove(); }, 4000);
 }
@@ -762,7 +762,7 @@ async function refreshReports() {
     });
     ['refreshIcon','refreshIconPlain'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.textContent = '↻';
+        if (el) el.textContent = '';
     });
 
     try {
@@ -819,10 +819,10 @@ function showRefreshToast(count) {
     const toast = document.createElement('div');
     toast.className = 'new-report-toast';
     if (count > 0) {
-        toast.innerHTML = '✅ <span>' + count + ' new report' + (count > 1 ? 's' : '') + ' loaded!</span>';
+        toast.innerHTML = ' <span>' + count + ' new report' + (count > 1 ? 's' : '') + ' loaded!</span>';
         toast.style.borderLeftColor = '#10b981';
     } else {
-        toast.innerHTML = '✓ <span>All reports are up to date</span>';
+        toast.innerHTML = ' <span>All reports are up to date</span>';
         toast.style.borderLeftColor = '#D4AF37';
     }
     document.body.appendChild(toast);
@@ -957,7 +957,7 @@ function displayReports() {
             </div>
             <div class="report-actions">
                 <button class="btn btn-primary" onclick="printReport('${report.id}')">
-                    <span></span> Print Report
+                    <span>🖨️</span> Print Report
                 </button>
             </div>
         </div>
@@ -1199,11 +1199,11 @@ const AnalyticsState = {
 const CATEGORY_META = {
     'Waste Management':        { emoji: '',  color: '#ef4444', light: 'rgba(239,68,68,0.15)' },
     'Infrastructure Damage':   { emoji: '',  color: '#f59e0b', light: 'rgba(245,158,11,0.15)' },
-    'Environmental Violation': { emoji: '',  color: '#10b981', light: 'rgba(16,185,129,0.15)' },
+    'Environmental Violation': { emoji: '🌳',  color: '#10b981', light: 'rgba(16,185,129,0.15)' },
     'Public Safety':           { emoji: '',  color: '#8B1538', light: 'rgba(139,21,56,0.15)' },
     'Water & Sanitation':      { emoji: '',  color: '#2563eb', light: 'rgba(37,99,235,0.15)' },
     'Street Lighting':         { emoji: '',  color: '#D4AF37', light: 'rgba(212,175,55,0.15)' },
-    'Dog Issues':              { emoji: '',  color: '#a16207', light: 'rgba(161,98,7,0.15)' },
+    'Dog Issues':              { emoji: '🐕',  color: '#a16207', light: 'rgba(161,98,7,0.15)' },
     'Other':                   { emoji: '',  color: '#6b7280', light: 'rgba(107,114,128,0.15)' }
 };
 
@@ -1766,7 +1766,7 @@ function renderTrendChart(type) {
             return `<div style="text-align:center; padding:10px 8px; border-radius:10px; background:${isPeak ? 'linear-gradient(135deg,#8B1538,#D4AF37)' : '#f9fafb'}; border:1px solid ${isPeak ? 'transparent' : '#e5e7eb'};">
                 <div style="font-size:0.78em; font-weight:600; color:${isPeak ? 'rgba(255,255,255,0.85)' : '#6b7280'}; text-transform:uppercase; letter-spacing:.5px;">${m.label}</div>
                 <div style="font-size:1.6em; font-weight:700; color:${isPeak ? '#fff' : '#1f2937'}; line-height:1.2; margin:4px 0;">${totals[i]}</div>
-                <div style="font-size:0.72em; color:${isPeak ? 'rgba(255,255,255,0.75)' : '#9ca3af'};">${isPeak ? ' Peak' : 'reports'}</div>
+                <div style="font-size:0.72em; color:${isPeak ? 'rgba(255,255,255,0.75)' : '#9ca3af'};">${isPeak ? '🏆 Peak' : 'reports'}</div>
             </div>`;
         }).join('');
     }
@@ -1820,7 +1820,7 @@ function populatePrintMonthSelect() {
             <div style="margin-bottom:12px;">
                 <strong style="font-size:1.1em; color:#8B1538;"> ${new Date(m.year, m.month).toLocaleString('default', { month: 'long', year: 'numeric' })}</strong>
                 <span style="margin-left:12px; font-size:0.9em; color:#6b7280;">Total Reports: <strong style="color:#1f2937;">${total}</strong></span>
-                ${realReports.length > 0 ? `<span style="margin-left:12px; font-size:0.85em; background:#d1fae5; color:#065f46; padding:2px 8px; border-radius:10px;">✅ ${realReports.length} real DB report(s)</span>` : ''}
+                ${realReports.length > 0 ? `<span style="margin-left:12px; font-size:0.85em; background:#d1fae5; color:#065f46; padding:2px 8px; border-radius:10px;"> ${realReports.length} real DB report(s)</span>` : ''}
             </div>
             <div style="display:flex; flex-wrap:wrap; gap:8px;">${catBreakdown}</div>
         `;
@@ -2029,7 +2029,7 @@ function printMonthlyReport() {
         <tbody>${catRows}</tbody>
     </table>
 
-    <div class="section-title"> Detailed Report List</div>
+    <div class="section-title">📝 Detailed Report List</div>
     <table>
         <thead>
             <tr>
@@ -2070,7 +2070,7 @@ function printAllChartsReport() {
         const legendHTML = legendEl ? legendEl.innerHTML : '';
         return `
             <div style="break-inside:avoid; margin-bottom:40px;">
-                <div style="font-size:1.1em; font-weight:700; color:#8B1538; padding:8px 14px; background:linear-gradient(135deg,rgba(139,21,56,0.07),rgba(212,175,55,0.07)); border-left:4px solid #8B1538; border-radius:4px; margin-bottom:16px;">📊 ${c.title}</div>
+                <div style="font-size:1.1em; font-weight:700; color:#8B1538; padding:8px 14px; background:linear-gradient(135deg,rgba(139,21,56,0.07),rgba(212,175,55,0.07)); border-left:4px solid #8B1538; border-radius:4px; margin-bottom:16px;"> ${c.title}</div>
                 <img style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:10px; background:#fafafa;" src="${imgSrc}" alt="${c.title}">
                 ${legendHTML ? `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid #f3f4f6;">${legendHTML}</div>` : ''}
             </div>`;
@@ -2234,7 +2234,7 @@ function displayManageReports() {
                     <span class="report-id">${report.id}</span>
                     <div class="report-badges" style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
                         <span class="badge badge-${report.priority.toLowerCase()}">${report.priority}</span>
-                        ${isVerified ? '<span class="badge" style="background: #d1fae5; color: #065f46;">✓ AUTO-VERIFIED</span>' : ''}
+                        ${isVerified ? '<span class="badge" style="background: #d1fae5; color: #065f46;"> AUTO-VERIFIED</span>' : ''}
                         ${requiresReview ? '<span class="badge" style="background: #fef3c7; color: #92400e;">⚠️ NEEDS REVIEW</span>' : ''}
                     </div>
                     ${report.verificationReason ? `<div style="margin-top: 5px; font-size: 12px; color: #666;"><em>${report.verificationReason}</em></div>` : ''}
@@ -2245,10 +2245,37 @@ function displayManageReports() {
                 <div class="report-category">${report.category}</div>
                 <div class="report-description">${report.description}</div>
                 <div class="report-meta">
-                    <span> ${report.location}</span>
-                    <span> ${formatDate(report.date)}</span>
-                    <span> ${report.name}</span>
+                    <span>📍 ${report.location}</span>
+                    <span>📅 ${formatDate(report.date)}</span>
+                    <span>👤 ${report.name}</span>
                 </div>
+                
+                <!-- Proof Photos & Videos Section -->
+                ${(report.photos && report.photos.length > 0 && report.photos.some(p => p.url)) ? `
+                <div style="margin-top:12px;border-top:1px solid #e5e7eb;padding-top:12px;">
+                    <div style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">📸 Proof Media (${report.photos.filter(p=>p.url).length})</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                        ${report.photos.filter(p => p.url).map((p, i) => {
+                            const isVideo = p.url.includes('.mp4') || p.url.includes('.webm') || p.url.includes('.mov') || p.type && p.type.startsWith('video');
+                            return `
+                            <div onclick="${isVideo ? `albumOpenLightbox('${p.url.replace(/'/g,"\\'")}')` : `albumOpenLightbox('${p.url.replace(/'/g,"\\'")}')` }"
+                                style="position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:1.5px solid #e5e7eb;cursor:pointer;flex-shrink:0;transition:all 0.2s;background:#f3f4f6;"
+                                onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
+                                onmouseout="this.style.transform='';this.style.boxShadow=''">
+                                ${isVideo ? `
+                                    <video src="${p.url}" style="width:100%;height:100%;object-fit:cover;"></video>
+                                    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:28px;height:28px;background:rgba(255,255,255,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;">▶</div>
+                                ` : `
+                                    <img src="${p.url}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;">
+                                `}
+                                <div style="position:absolute;top:0;right:0;background:${isVideo ? '#2563eb' : '#8B1538'};color:white;font-size:10px;padding:2px 4px;border-radius:0 8px 0 4px;font-weight:600;">${isVideo ? '🎥' : '📷'}</div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>
+                ` : `
+                <div style="margin-top:12px;padding:10px 12px;background:#f9fafb;border-radius:8px;border-left:3px solid #d1d5db;font-size:0.85em;color:#6b7280;">📷 No proof photos or videos</div>
+                `}
             </div>
             <div class="manage-report-footer">
                 ${isAdmin() ? `
@@ -2262,7 +2289,7 @@ function displayManageReports() {
                 ` : `
                 <div class="status-selector">
                     <span class="badge badge-${report.status.toLowerCase().replace(' ', '-')}" style="font-size:0.95em;padding:8px 16px;">${report.status}</span>
-                    <small style="color:#6b7280;margin-left:6px;"> View Only</small>
+                    <small style="color:#6b7280;margin-left:6px;">🔒 View Only</small>
                 </div>
                 `}
                 <div style="display:flex;gap:8px;">
@@ -2270,7 +2297,7 @@ function displayManageReports() {
                         View Details
                     </button>
                     <button class="btn btn-secondary" onclick="printReport('${report.id}')">
-                         Print
+                        🖨️ Print
                     </button>
                     ${isAdmin() ? `
                     <button class="btn btn-danger" style="padding:8px 14px;font-size:0.85em;" onclick="deleteReport('${report.id}')">
@@ -2363,7 +2390,7 @@ function addNotificationLog(entry) {
 
 // ---- Message Templates ----
 function getNotificationMessages(report, newStatus) {
-    const statusEmoji = { 'Pending': '', 'In Progress': '🔧', 'Resolved': '' }[newStatus] || '';
+    const statusEmoji = { 'Pending': '', 'In Progress': '', 'Resolved': '' }[newStatus] || '';
     const barangay = 'Barangay Danao, Antequera, Bohol';
 
     const smsMessage =
@@ -2615,7 +2642,7 @@ function openNotificationSettings() {
                 <button onclick="saveNotificationSettings()"
                     style="padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#8B1538,#b91c4e);color:white;font-size:14px;font-weight:700;cursor:pointer;transition:opacity 0.2s;"
                     onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-                     Save
+                    💾 Save
                 </button>
                 <button onclick="openNotificationLog()"
                     style="padding:13px;border:2px solid #e5e7eb;border-radius:12px;background:white;color:#374151;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.2s;"
@@ -2700,10 +2727,10 @@ function openNotificationLog() {
                     </div>
                     <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
                         <span style="font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;background:${emailNA ? '#f3f4f6' : emailOk ? '#d1fae5' : '#fee2e2'};color:${emailNA ? '#9ca3af' : emailOk ? '#065f46' : '#991b1b'};">
-                             ${emailNA ? 'N/A' : emailOk ? 'Sent' : 'Failed'}
+                            📧 ${emailNA ? 'N/A' : emailOk ? 'Sent' : 'Failed'}
                         </span>
                         <span style="font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;background:${smsNA ? '#f3f4f6' : smsOk ? '#d1fae5' : '#fee2e2'};color:${smsNA ? '#9ca3af' : smsOk ? '#065f46' : '#991b1b'};">
-                             ${smsNA ? 'N/A' : smsOk ? 'Sent' : 'Failed'}
+                            📱 ${smsNA ? 'N/A' : smsOk ? 'Sent' : 'Failed'}
                         </span>
                         ${entry.email ? `<span style="font-size:11px;color:#6b7280;">${entry.email}</span>` : ''}
                         ${entry.contact ? `<span style="font-size:11px;color:#6b7280;">${entry.contact}</span>` : ''}
@@ -2722,7 +2749,7 @@ function openNotificationLog() {
                 <p style="color:#6b7280;font-size:0.82em;margin:3px 0 0;">${log.length} notification event${log.length !== 1 ? 's' : ''} recorded</p>
             </div>
             <div style="display:flex;gap:8px;align-items:center;">
-                ${log.length > 0 ? `<button onclick="clearNotificationLog()" style="padding:6px 14px;border:1.5px solid #fee2e2;border-radius:8px;background:white;color:#dc2626;font-size:12px;font-weight:600;cursor:pointer;">🗑️ Clear Log</button>` : ''}
+                ${log.length > 0 ? `<button onclick="clearNotificationLog()" style="padding:6px 14px;border:1.5px solid #fee2e2;border-radius:8px;background:white;color:#dc2626;font-size:12px;font-weight:600;cursor:pointer;"> Clear Log</button>` : ''}
                 <button onclick="document.getElementById('notifLogModal').remove()" style="border:none;background:#f3f4f6;border-radius:50%;width:34px;height:34px;font-size:1.1em;cursor:pointer;color:#374151;">✕</button>
             </div>
         </div>
@@ -2754,8 +2781,8 @@ function showNotifResultToast(results, report, newStatus) {
     if (emailNA && smsNA) return;
 
     const parts = [];
-    if (!emailNA) parts.push(` Email: ${emailOk ? '✅ Sent' : '❌ Failed'}`);
-    if (!smsNA)   parts.push(` SMS: ${smsOk ? '✅ Sent' : '❌ Failed'}`);
+    if (!emailNA) parts.push(`📧 Email: ${emailOk ? ' Sent' : ' Failed'}`);
+    if (!smsNA)   parts.push(`📱 SMS: ${smsOk ? ' Sent' : ' Failed'}`);
 
     const toast = document.createElement('div');
     toast.className = 'new-report-toast';
@@ -2789,6 +2816,18 @@ async function updateReportStatus(reportId, newStatus) {
     report.status = newStatus;
     console.log(`Status updated locally: ${oldStatus} → ${newStatus}`);
 
+    // Track when status changes
+    if (!report.statusDates) {
+        report.statusDates = {
+            'Pending': report.date,
+            'In Progress': null,
+            'Resolved': null
+        };
+    }
+    if (newStatus !== oldStatus) {
+        report.statusDates[newStatus] = new Date();
+    }
+
     if (newStatus === 'Resolved' && !report.responseTime) {
         const daysDiff = Math.floor((new Date() - report.date) / (1000 * 60 * 60 * 24));
         report.responseTime = daysDiff;
@@ -2796,9 +2835,9 @@ async function updateReportStatus(reportId, newStatus) {
 
     try {
         await updateReportInDB(report);
-        console.log('✓ Report status updated in Firestore database');
+        console.log(' Report status updated in Firestore database');
     } catch (error) {
-        console.error('❌ Error updating database:', error);
+        console.error(' Error updating database:', error);
         report.status = oldStatus;
         alert('⚠️ Error saving status. Please try again.');
         return;
@@ -2814,7 +2853,7 @@ async function updateReportStatus(reportId, newStatus) {
     }
 
     // Show status-updated toast
-    const statusEmoji = { 'Pending': '', 'In Progress': '🔧', 'Resolved': '' }[newStatus] || '';
+    const statusEmoji = { 'Pending': '', 'In Progress': '', 'Resolved': '' }[newStatus] || '';
     const statusToast = document.createElement('div');
     statusToast.className = 'new-report-toast';
     statusToast.style.borderLeftColor = { 'Pending': '#f59e0b', 'In Progress': '#3b82f6', 'Resolved': '#10b981' }[newStatus] || '#8B1538';
@@ -2854,11 +2893,11 @@ function viewReportDetails(reportId) {
                                style="width:100%;height:100%;object-fit:cover;transition:transform 0.2s;"
                                onmouseover="this.style.transform='scale(1.05)'"
                                onmouseout="this.style.transform='scale(1)'">
-                           <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);color:white;font-size:9px;padding:2px 5px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;">🔍 View</div>
+                           <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);color:white;font-size:9px;padding:2px 5px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;"> View</div>
                        </div>`).join('')}
                </div>
            </div>`
-        : `<div style="margin-top:16px;padding:14px;background:#f9fafb;border-radius:10px;text-align:center;color:#9ca3af;font-size:0.88em;"> No proof photos attached</div>`;
+        : `<div style="margin-top:16px;padding:14px;background:#f9fafb;border-radius:10px;text-align:center;color:#9ca3af;font-size:0.88em;">📷 No proof photos attached</div>`;
 
     const overlay = document.createElement('div');
     overlay.id = 'reportDetailModal';
@@ -2872,7 +2911,7 @@ function viewReportDetails(reportId) {
                 <div style="font-family:'Courier New',monospace;font-size:1.3em;font-weight:800;color:#8B1538;">${report.id}</div>
                 <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
                     <span style="padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700;background:${statusColor}22;color:${statusColor};">${report.status}</span>
-                    <span style="padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700;background:${priorityColor}22;color:${priorityColor};">⚡ ${report.priority} Priority</span>
+                    <span style="padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700;background:${priorityColor}22;color:${priorityColor};"> ${report.priority} Priority</span>
                 </div>
             </div>
             <button onclick="document.getElementById('reportDetailModal').remove()"
@@ -2902,7 +2941,7 @@ function viewReportDetails(reportId) {
                 ${report.email ? `
                 <div style="background:#f9fafb;border-radius:10px;padding:12px 14px;">
                     <div style="font-size:11px;color:#9ca3af;font-weight:600;margin-bottom:3px;">EMAIL</div>
-                    <div style="font-weight:700;color:#1f2937;font-size:0.9em;"> ${report.email}</div>
+                    <div style="font-weight:700;color:#1f2937;font-size:0.9em;">📧 ${report.email}</div>
                 </div>` : ''}
                 <div style="background:#f9fafb;border-radius:10px;padding:12px 14px;${report.email ? '' : 'grid-column:span 2;'}">
                     <div style="font-size:11px;color:#9ca3af;font-weight:600;margin-bottom:3px;">LOCATION</div>
@@ -2930,7 +2969,7 @@ function viewReportDetails(reportId) {
             <button onclick="printReport('${report.id}')"
                 style="padding:9px 20px;border:2px solid #e5e7eb;border-radius:8px;background:white;color:#374151;font-size:13px;font-weight:600;cursor:pointer;"
                 onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
-                 Print
+                🖨️ Print
             </button>
             <button onclick="document.getElementById('reportDetailModal').remove()"
                 style="padding:9px 20px;border:none;border-radius:8px;background:linear-gradient(135deg,#8B1538,#b91c4e);color:white;font-size:13px;font-weight:700;cursor:pointer;">
@@ -3101,7 +3140,7 @@ function printReport(reportId) {
         </head>
         <body>
             <div class="print-header">
-                <h1> CITIZEN REPORT</h1>
+                <h1>🏛️ CITIZEN REPORT</h1>
                 <p>Barangay Danao, Antequera, Bohol</p>
             </div>
             
@@ -3138,7 +3177,7 @@ function printReport(reportId) {
             </div>
             
             <div class="report-section">
-                <div class="section-title">👤 Reporter Information</div>
+                <div class="section-title"> Reporter Information</div>
                 <div class="info-grid">
                     <div class="info-label">Name:</div>
                     <div class="info-value">${report.name}</div>
@@ -3154,7 +3193,7 @@ function printReport(reportId) {
             </div>
             
             <div class="report-section">
-                <div class="section-title"> Issue Description</div>
+                <div class="section-title">📝 Issue Description</div>
                 <div class="description-box">
                     ${report.description}
                 </div>
@@ -3300,7 +3339,7 @@ function showExportMenu() {
             <button onclick="exportCategory('Environmental Violation'); closeExportMenu();" 
                     class="export-category-btn" ${categoryCounts['Environmental Violation'] === 0 ? 'disabled' : ''}>
                 <span style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 20px;"></span>
+                    <span style="font-size: 20px;">🌳</span>
                     <span>Environmental Violation</span>
                 </span>
                 <span class="count-badge">${categoryCounts['Environmental Violation']} reports</span>
@@ -3336,7 +3375,7 @@ function showExportMenu() {
             <button onclick="exportCategory('Dog Issues'); closeExportMenu();" 
                     class="export-category-btn" ${categoryCounts['Dog Issues'] === 0 ? 'disabled' : ''}>
                 <span style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 20px;"></span>
+                    <span style="font-size: 20px;">🐕</span>
                     <span>Dog Issues</span>
                 </span>
                 <span class="count-badge">${categoryCounts['Dog Issues']} reports</span>
@@ -3445,7 +3484,7 @@ function exportAllReports() {
     downloadCSV(excelData, `Barangay_Danao_All_Reports_${new Date().toISOString().split('T')[0]}.csv`);
     
     setTimeout(() => {
-        alert(`✅ All Reports Exported!\n\nTotal: ${AppState.reports.length} reports\nFile: Barangay_Danao_All_Reports_${new Date().toISOString().split('T')[0]}.csv`);
+        alert(` All Reports Exported!\n\nTotal: ${AppState.reports.length} reports\nFile: Barangay_Danao_All_Reports_${new Date().toISOString().split('T')[0]}.csv`);
     }, 100);
 }
 
@@ -3509,7 +3548,7 @@ function exportCategory(category) {
     downloadCSV(excelData, fileName);
     
     setTimeout(() => {
-        alert(`✅ ${category} Reports Exported!\n\nTotal: ${categoryReports.length} reports\nFile: ${fileName}`);
+        alert(` ${category} Reports Exported!\n\nTotal: ${categoryReports.length} reports\nFile: ${fileName}`);
     }, 100);
 }
 
@@ -3625,7 +3664,7 @@ const CATEGORY_ICONS = {
     'Public Safety':          '',
     'Water & Sanitation':     '',
     'Street Lighting':        '',
-    'Other':                  ''
+    'Other':                  '📌'
 };
 
 const CATEGORY_COLORS = {
@@ -3754,7 +3793,7 @@ function renderAlbum() {
         // Within each period, group by category
         Object.entries(cats).forEach(([cat, catPhotos]) => {
             const colors = CATEGORY_COLORS[cat] || CATEGORY_COLORS['Other'];
-            const icon   = CATEGORY_ICONS[cat] || '';
+            const icon   = CATEGORY_ICONS[cat] || '📌';
             html += `
             <div style="margin-bottom:22px;border:1.5px solid ${colors.border}33;border-radius:14px;overflow:hidden;">
                 <!-- Category Header -->
@@ -3778,7 +3817,7 @@ function renderAlbum() {
                             <div style="font-size:10px;font-weight:700;font-family:monospace;letter-spacing:.3px;">${p.reportId}</div>
                             <div style="font-size:9px;opacity:0.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"> ${p.location || '—'}</div>
                         </div>
-                        <div style="position:absolute;top:7px;right:7px;background:rgba(0,0,0,0.5);border-radius:6px;padding:3px 6px;font-size:9px;color:white;font-weight:600;">🔍</div>
+                        <div style="position:absolute;top:7px;right:7px;background:rgba(0,0,0,0.5);border-radius:6px;padding:3px 6px;font-size:9px;color:white;font-weight:600;"></div>
                     </div>`).join('')}
                 </div>
             </div>`;
@@ -3802,7 +3841,7 @@ function albumOpenLightbox(url) {
             style="position:absolute;top:-14px;right:-14px;width:36px;height:36px;background:#ef4444;color:white;border:none;border-radius:50%;font-size:1.1em;cursor:pointer;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);">✕</button>
         <a href="${url}" download target="_blank"
             style="position:absolute;bottom:-14px;right:-14px;width:36px;height:36px;background:#10b981;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:1em;box-shadow:0 4px 12px rgba(0,0,0,0.4);"
-            onclick="event.stopPropagation()" title="Download photo"></a>
+            onclick="event.stopPropagation()" title="Download photo">⬇️</a>
     </div>`;
     document.body.appendChild(overlay);
 }
