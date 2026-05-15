@@ -2239,7 +2239,7 @@ function displayManageReports() {
         const requiresReview = report.requiresReview && !report.autoVerified;
         
         return `
-        <div class="manage-report-card priority-${report.priority.toLowerCase()}" style="${report.priority === 'High' && !report.autoVerified ? 'border: 2px solid #ef4444;' : ''}">
+        <div class="manage-report-card priority-${report.priority.toLowerCase()}" style="${report.priority === 'High' && !report.autoVerified ? 'border: 2px solid #ef4444;' : ''}" data-report-id="${report.id}" data-status="${report.status}" data-priority="${report.priority}" data-location="${report.location}" data-citizen="${report.name}">
             <div class="manage-report-header">
                 <div>
                     <span class="report-id">${report.id}</span>
@@ -3647,6 +3647,62 @@ window.displayReports = displayReports;
 window.updateDashboard = updateDashboard;
 window.updateAnalytics = updateAnalytics;
 window.displayManageReports = displayManageReports;
+
+// ===================================
+// FILTER MANAGE REPORTS
+// ===================================
+function filterManageReports() {
+    const searchText = (document.getElementById('manageSearchInput')?.value || '').toLowerCase();
+    const statusFilter = document.getElementById('manageStatusFilter')?.value || '';
+    const priorityFilter = document.getElementById('managePriorityFilter')?.value || '';
+    
+    const manageList = document.getElementById('manageReportsList');
+    if (!manageList) return;
+    
+    const reportCards = manageList.querySelectorAll('[data-report-id]');
+    let visibleCount = 0;
+    
+    reportCards.forEach(card => {
+        const reportId = card.getAttribute('data-report-id');
+        const reportStatus = card.getAttribute('data-status');
+        const reportPriority = card.getAttribute('data-priority');
+        const reportLocation = card.getAttribute('data-location').toLowerCase();
+        const reportCitizen = card.getAttribute('data-citizen').toLowerCase();
+        
+        // Check if matches all filters
+        const matchSearch = !searchText || 
+            reportId.toLowerCase().includes(searchText) || 
+            reportLocation.includes(searchText) || 
+            reportCitizen.includes(searchText);
+        
+        const matchStatus = !statusFilter || reportStatus === statusFilter;
+        const matchPriority = !priorityFilter || reportPriority === priorityFilter;
+        
+        const isVisible = matchSearch && matchStatus && matchPriority;
+        card.style.display = isVisible ? 'block' : 'none';
+        if (isVisible) visibleCount++;
+    });
+    
+    // Show "no results" message
+    if (visibleCount === 0 && reportCards.length > 0) {
+        if (!document.getElementById('noResults')) {
+            const noResults = document.createElement('div');
+            noResults.id = 'noResults';
+            noResults.style.cssText = 'text-align:center;padding:40px 20px;color:#9ca3af;';
+            noResults.innerHTML = `
+                <div style="font-size:2.5em;margin-bottom:12px;">🔍</div>
+                <div style="font-weight:700;font-size:1.05em;color:#6b7280;margin-bottom:6px;">No reports found</div>
+                <div style="font-size:0.9em;">Try adjusting your search or filters</div>
+            `;
+            manageList.appendChild(noResults);
+        }
+    } else {
+        const noResults = document.getElementById('noResults');
+        if (noResults) noResults.remove();
+    }
+}
+
+window.filterManageReports = filterManageReports;
 window.updateReportStatus = updateReportStatus;
 window.openNotificationSettings = openNotificationSettings;
 window.closeNotificationSettings = closeNotificationSettings;
