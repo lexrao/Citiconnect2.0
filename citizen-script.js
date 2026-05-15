@@ -803,6 +803,28 @@ async function trackMyReport() {
                 <div style="font-size:10px;color:#9ca3af;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Description</div>
                 <div style="color:#374151;font-size:0.9em;line-height:1.7;">${report.description}</div>
             </div>` : ''}
+
+            ${report.workProof && report.workProof.length > 0 ? `
+            <div style="margin-top:14px;background:#f0fdf4;border-left:4px solid #10b981;border-radius:0 10px 10px 0;padding:14px 16px;">
+                <div style="font-size:10px;color:#059669;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">✓ Completion Proof (${report.workProof.length})</div>
+                <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                    ${report.workProof.map((p, i) => `
+                        <div style="position:relative;width:100px;height:100px;border-radius:10px;overflow:hidden;border:2px solid #10b981;cursor:pointer;flex-shrink:0;background:#f3f4f6;"
+                            onclick="openTrackProofLightbox('${p.url.replace(/'/g, "\\'")}','${(p.name||'Proof '+(i+1)).replace(/'/g,"\\'")}')">
+                            ${p.url && (p.url.match(/\.(mp4|webm|mov)$/i) ? `
+                                <video src="${p.url}" style="width:100%;height:100%;object-fit:cover;"></video>
+                                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:32px;height:32px;background:rgba(16,185,129,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;pointer-events:none;color:white;">▶</div>
+                            ` : `
+                                <img src="${p.url}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            `)}
+                            <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);color:white;font-size:8px;padding:2px 5px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;">✓ Work Done</div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div style="margin-top:10px;font-size:0.83em;color:#059669;line-height:1.6;">
+                     The barangay team has provided proof of completion. Your concern has been successfully resolved!
+                </div>
+            </div>` : ''}
         </div>
 
         <!-- Footer -->
@@ -817,6 +839,33 @@ async function trackMyReport() {
 }
 
 window.trackMyReport = trackMyReport;
+
+// ===================================
+// TRACK REPORT PROOF LIGHTBOX
+// ===================================
+function openTrackProofLightbox(src, name) {
+    const existing = document.getElementById('trackProofLightbox');
+    if (existing) existing.remove();
+    const lb = document.createElement('div');
+    lb.id = 'trackProofLightbox';
+    lb.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn 0.2s;cursor:zoom-out;';
+    lb.onclick = () => lb.remove();
+    
+    const mediaHTML = src.match(/\.(mp4|webm|mov)$/i) ? 
+        `<video src="${src}" controls autoplay style="max-width:90vw;max-height:85vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.5);"></video>` :
+        `<img src="${src}" alt="${name}" style="max-width:90vw;max-height:85vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.5);">`;
+    
+    lb.innerHTML = `
+    <div style="position:relative;max-width:90vw;max-height:90vh;">
+        ${mediaHTML}
+        <div style="text-align:center;color:rgba(255,255,255,0.7);font-size:13px;margin-top:10px;font-weight:600;">Proof of Completion</div>
+        <button onclick="event.stopPropagation();document.getElementById('trackProofLightbox').remove()"
+            style="position:absolute;top:-14px;right:-14px;width:36px;height:36px;border-radius:50%;background:#10b981;color:white;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);">✕</button>
+    </div>`;
+    document.body.appendChild(lb);
+}
+
+window.openTrackProofLightbox = openTrackProofLightbox;
 
 // ===================================
 // SUBMISSION CONFIRMATION NOTIFICATION
