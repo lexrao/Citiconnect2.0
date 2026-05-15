@@ -1028,6 +1028,9 @@ function updateLGUMapMarkers() {
     AppState.markers = [];
     
     AppState.reports.forEach(report => {
+        // Skip resolved reports - don't show them on map
+        if (report.status === 'Resolved') return;
+        
         if (report.coordinates) {
             const color = getMarkerColor(report);
             
@@ -1059,16 +1062,10 @@ function updateLGUMapMarkers() {
 }
 
 // ===================================
-// Get Marker Color
+// Get Marker Color (by priority, not status)
 // ===================================
 function getMarkerColor(report) {
-    if (report.status === 'Resolved') {
-        return {
-            url: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png',
-            hex: '#6b7280'
-        };
-    }
-    
+    // Resolved reports are not shown on map, so no need to check status
     switch(report.priority) {
         case 'High':
             return {
