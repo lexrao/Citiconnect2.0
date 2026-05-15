@@ -2292,10 +2292,14 @@ function displayManageReports() {
                     <small style="color:#6b7280;margin-left:6px;">🔒 View Only</small>
                 </div>
                 `}
-                <div style="display:flex;gap:8px;">
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
                     <button class="btn btn-primary" onclick="viewReportDetails('${report.id}')">
                         View Details
                     </button>
+                    ${(report.status === 'In Progress' || report.status === 'Resolved') && isAdmin() ? `
+                    <button class="btn" style="background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;padding:8px 14px;font-size:0.85em;" onclick="openProofUploadModal('${report.id}')">
+                        📸 Proof
+                    </button>` : ''}
                     <button class="btn btn-secondary" onclick="printReport('${report.id}')">
                         🖨️ Print
                     </button>
@@ -3957,3 +3961,156 @@ async function handleAdminProofUpload(event, reportId) {
 
 window.handleAdminProofDrop = handleAdminProofDrop;
 window.handleAdminProofUpload = handleAdminProofUpload;
+
+// ===================================
+// QUICK PROOF UPLOAD MODAL
+// ===================================
+function openProofUploadModal(reportId) {
+    const report = AppState.reports.find(r => r.id === reportId);
+    if (!report) { alert('Report not found'); return; }
+
+    const existing = document.getElementById('proofUploadModal');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'proofUploadModal';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;';
+    overlay.innerHTML = `
+    <div style="background:white;border-radius:16px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg,#10b981,#059669);color:white;padding:24px;border-radius:16px 16px 0 0;">
+            <h2 style="margin:0;font-size:1.3em;display:flex;align-items:center;gap:10px;">
+                <span>📸</span> Upload Proof of Work
+            </h2>
+            <p style="margin:8px 0 0;opacity:0.9;font-size:0.9em;">Report: <strong>${report.id}</strong> - ${report.category}</p>
+        </div>
+
+        <!-- Content -->
+        <div style="padding:24px;">
+            <!-- Drop Zone -->
+            <div id="quickProofDropZone_${reportId}"
+                ondragover="event.preventDefault(); this.style.borderColor='#10b981'; this.style.background='#f0fdf4';"
+                ondragleave="this.style.borderColor='#d1d5db'; this.style.background='#fafafa';"
+                ondrop="handleQuickProofDrop(event, '${reportId}')"
+                onclick="document.getElementById('quickProofInput_${reportId}').click()"
+                style="border:2px dashed #10b981;border-radius:12px;background:#fafafa;padding:32px 20px;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:16px;">
+                <div style="font-size:2.5em;margin-bottom:12px;">🎥</div>
+                <div style="font-weight:700;color:#374151;font-size:1em;">Drop photos or videos here</div>
+                <div style="color:#9ca3af;font-size:0.85em;margin-top:8px;">Or click to browse • Max 50MB each</div>
+                <div style="color:#10b981;font-size:0.8em;margin-top:6px;font-weight:600;">Supports: JPG, PNG, MP4, WebM, MOV</div>
+                <input type="file" id="quickProofInput_${reportId}" accept="image/*,video/*" multiple style="display:none;" 
+                    onchange="handleQuickProofUpload(event, '${reportId}')">
+            </div>
+
+            <!-- Preview -->
+            <div id="quickProofPreview_${reportId}" style="margin-bottom:16px;"></div>
+
+            <!-- Status Info -->
+            <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:12px;border-radius:0 8px 8px 0;margin-bottom:16px;">
+                <div style="font-size:0.85em;color:#065f46;">
+                    <div style="font-weight:700;margin-bottom:4px;">✓ Status: <span style="color:#10b981;">${report.status}</span></div>
+                    <div style="font-size:0.8em;">Upload completion photos/videos to show the work is done.</div>
+                </div>
+            </div>
+
+            <!-- Upload Count -->
+            <div id="uploadCount_${reportId}" style="text-align:center;color:#9ca3af;font-size:0.85em;margin-bottom:16px;">
+                ${report.workProof ? `✓ ${report.workProof.length} proof(s) already uploaded` : '📭 No proofs uploaded yet'}
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="padding:16px 24px;border-top:1px solid #e5e7eb;display:flex;gap:10px;justify-content:flex-end;">
+            <button onclick="document.getElementById('proofUploadModal').remove()"
+                style="padding:10px 20px;border:1.5px solid #e5e7eb;background:white;color:#374151;border-radius:8px;font-weight:600;cursor:pointer;transition:all 0.2s;"
+                onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                Close
+            </button>
+            <button onclick="viewReportDetails('${reportId}'); document.getElementById('proofUploadModal').remove();"
+                style="padding:10px 20px;border:none;background:linear-gradient(135deg,#10b981,#059669);color:white;border-radius:8px;font-weight:700;cursor:pointer;transition:all 0.2s;"
+                onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 12px rgba(16,185,129,0.4)'"
+                onmouseout="this.style.transform='';this.style.boxShadow=''">
+                View Full Report
+            </button>
+        </div>
+    </div>`;
+    
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+}
+
+function handleQuickProofDrop(event, reportId) {
+    event.preventDefault();
+    event.stopPropagation();
+    const files = Array.from(event.dataTransfer.files);
+    handleQuickProofUpload({ target: { files } }, reportId);
+}
+
+async function handleQuickProofUpload(event, reportId) {
+    const files = Array.from(event.target.files);
+    const report = AppState.reports.find(r => r.id === reportId);
+    if (!report) { alert('Report not found'); return; }
+    if (files.length === 0) return;
+
+    const previewDiv = document.getElementById(`quickProofPreview_${reportId}`);
+    if (!previewDiv) return;
+    
+    previewDiv.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:20px;">⏳ Uploading ' + files.length + ' file(s)...</div>';
+
+    let uploadedCount = 0;
+    for (const file of files) {
+        if (file.size > 50 * 1024 * 1024) {
+            alert(`"${file.name}" exceeds 50MB limit`);
+            continue;
+        }
+
+        const isImage = file.type.startsWith('image/');
+        const isVideo = file.type.startsWith('video/');
+        if (!isImage && !isVideo) {
+            alert(`"${file.name}" is not a valid image or video`);
+            continue;
+        }
+
+        try {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const proof = { name: file.name, dataUrl: e.target.result, type: file.type };
+                
+                // Upload to Cloudinary
+                const formData = new FormData();
+                const blob = await fetch(proof.dataUrl).then(r => r.blob());
+                formData.append('file', blob, proof.name);
+                formData.append('upload_preset', 'barangay_photos');
+                formData.append('folder', `barangay_danao_work_proof/${reportId}`);
+
+                const response = await fetch(`https://api.cloudinary.com/v1_1/dur5mhgap/image/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.secure_url) {
+                    if (!report.workProof) report.workProof = [];
+                    report.workProof.push({ name: proof.name, url: data.secure_url, uploadedAt: new Date() });
+                    await updateReportInDB(report);
+                    uploadedCount++;
+                    
+                    // Update preview
+                    const countDiv = document.getElementById(`uploadCount_${reportId}`);
+                    if (countDiv) countDiv.innerHTML = `✓ ${report.workProof.length} proof(s) uploaded`;
+                    if (previewDiv) previewDiv.innerHTML += `<div style="background:#f0fdf4;padding:10px;border-radius:8px;margin:8px 0;color:#065f46;font-weight:600;font-size:0.85em;">✓ ${proof.name} uploaded</div>`;
+                } else {
+                    alert('❌ Upload failed for ' + proof.name);
+                }
+            };
+            reader.readAsDataURL(file);
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('❌ Error uploading ' + file.name);
+        }
+    }
+}
+
+window.openProofUploadModal = openProofUploadModal;
+window.handleQuickProofDrop = handleQuickProofDrop;
+window.handleQuickProofUpload = handleQuickProofUpload;
