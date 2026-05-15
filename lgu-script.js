@@ -2884,7 +2884,7 @@ function viewReportDetails(reportId) {
 
     const photosHTML = (report.photos && report.photos.length > 0 && report.photos.some(p => p.url))
         ? `<div style="margin-top:20px;">
-               <div style="font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;"> Proof Photos (${report.photos.filter(p=>p.url).length})</div>
+               <div style="font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">📸 Citizen Proof Photos (${report.photos.filter(p=>p.url).length})</div>
                <div style="display:flex;flex-wrap:wrap;gap:10px;">
                    ${report.photos.filter(p => p.url).map((p, i) => `
                        <div style="position:relative;width:110px;height:110px;border-radius:10px;overflow:hidden;border:2px solid #e5e7eb;cursor:pointer;flex-shrink:0;"
@@ -2897,7 +2897,27 @@ function viewReportDetails(reportId) {
                        </div>`).join('')}
                </div>
            </div>`
-        : `<div style="margin-top:16px;padding:14px;background:#f9fafb;border-radius:10px;text-align:center;color:#9ca3af;font-size:0.88em;">📷 No proof photos attached</div>`;
+        : `<div style="margin-top:16px;padding:14px;background:#f9fafb;border-radius:10px;text-align:center;color:#9ca3af;font-size:0.88em;">📷 No citizen proof photos</div>`;
+
+    // Admin work proof upload section (only for In Progress & Resolved, only for admins)
+    const adminProofHTML = (report.status === 'In Progress' || report.status === 'Resolved') && isAdmin() ? `
+    <div style="margin-top:20px;border-top:2px solid #e5e7eb;padding-top:20px;">
+        <div style="font-size:12px;font-weight:700;color:#1f2937;text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;">🛠️ Work Proof - Upload Photos/Videos</div>
+        <div id="adminProofDropZone_${report.id}"
+            ondragover="event.preventDefault(); this.style.borderColor='#10b981'; this.style.background='#f0fdf4';"
+            ondragleave="this.style.borderColor='#d1d5db'; this.style.background='#fafafa';"
+            ondrop="handleAdminProofDrop(event, '${report.id}')"
+            onclick="document.getElementById('adminProofInput_${report.id}').click()"
+            style="border:2px dashed #d1d5db;border-radius:10px;background:#fafafa;padding:16px;text-align:center;cursor:pointer;transition:all 0.2s;">
+            <div style="font-size:1.5em;margin-bottom:6px;">🎥</div>
+            <div style="font-weight:600;color:#374151;font-size:0.9em;">Drop proof photos/videos or click to upload</div>
+            <div style="color:#9ca3af;font-size:0.8em;margin-top:4px;">Max 50MB per file • MP4, JPG, PNG, WebM</div>
+            <input type="file" id="adminProofInput_${report.id}" accept="image/*,video/*" multiple style="display:none;" 
+                onchange="handleAdminProofUpload(event, '${report.id}')">
+        </div>
+        <div id="adminProofPreview_${report.id}" style="margin-top:10px;"></div>
+    </div>
+    ` : '';
 
     const overlay = document.createElement('div');
     overlay.id = 'reportDetailModal';
@@ -2962,6 +2982,7 @@ function viewReportDetails(reportId) {
 
             <!-- Proof Photos -->
             ${photosHTML}
+            ${adminProofHTML}
         </div>
 
         <!-- Footer actions -->
@@ -3850,3 +3871,71 @@ window.refreshAlbum  = refreshAlbum;
 window.setAlbumSort  = setAlbumSort;
 window.renderAlbum   = renderAlbum;
 window.albumOpenLightbox = albumOpenLightbox;
+
+// ===================================
+// ADMIN WORK PROOF UPLOAD HANDLERS
+// ===================================
+function handleAdminProofDrop(event, reportId) {
+    event.preventDefault();
+    event.stopPropagation();
+    const files = Array.from(event.dataTransfer.files);
+    handleAdminProofUpload({ target: { files } }, reportId);
+}
+
+async function handleAdminProofUpload(event, reportId) {
+    const files = Array.from(event.target.files);
+    const report = AppState.reports.find(r => r.id === reportId);
+    if (!report) { alert('Report not found'); return; }
+
+    for (const file of files) {
+        if (file.size > 50 * 1024 * 1024) {
+            alert(`"${file.name}" exceeds 50MB limit`);
+            continue;
+        }
+
+        const isImage = file.type.startsWith('image/');
+        const isVideo = file.type.startsWith('video/');
+        if (!isImage && !isVideo) {
+            alert(`"${file.name}" is not a valid image or video`);
+            continue;
+        }
+
+        try {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const proof = { name: file.name, dataUrl: e.target.result, type: file.type };
+                
+                // Upload to Cloudinary
+                const formData = new FormData();
+                const blob = await fetch(proof.dataUrl).then(r => r.blob());
+                formData.append('file', blob, proof.name);
+                formData.append('upload_preset', 'barangay_photos');
+                formData.append('folder', `barangay_danao_work_proof/${reportId}`);
+
+                const response = await fetch(`https://api.cloudinary.com/v1_1/dur5mhgap/image/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.secure_url) {
+                    // Store proof URL in report
+                    if (!report.workProof) report.workProof = [];
+                    report.workProof.push({ name: proof.name, url: data.secure_url, uploadedAt: new Date() });
+                    await updateReportInDB(report);
+                    alert('✓ Work proof uploaded successfully');
+                    viewReportDetails(reportId); // Refresh modal
+                } else {
+                    alert('❌ Upload failed: ' + JSON.stringify(data));
+                }
+            };
+            reader.readAsDataURL(file);
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('❌ Error uploading: ' + error.message);
+        }
+    }
+}
+
+window.handleAdminProofDrop = handleAdminProofDrop;
+window.handleAdminProofUpload = handleAdminProofUpload;
