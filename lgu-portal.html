@@ -13,7 +13,7 @@
         <div class="login-card">
             <div class="login-header">
                 <img src="logo.png" alt="Barangay Danao Logo" class="login-logo" onerror="this.style.display='none'">
-                <h1> LGU Admin Portal</h1>
+                <h1>🔐 LGU Admin Portal</h1>
                 <p class="login-subtitle">Barangay Danao, Antequera, Bohol</p>
             </div>
 
@@ -38,7 +38,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block">
-                    <span></span> Sign In
+                    <span>🚀</span> Sign In
                 </button>
             </form>
 
@@ -57,7 +57,7 @@
         <div class="login-card" style="max-width: 550px;">
             <div class="login-header">
                 <img src="logo.png" alt="Barangay Danao Logo" class="login-logo" onerror="this.style.display='none'">
-                <h1> Register New Account</h1>
+                <h1>📝 Register New Account</h1>
                 <p class="login-subtitle">Barangay Danao LGU Staff Registration</p>
             </div>
 
@@ -70,12 +70,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="regEmail"> Email Address <span class="required">*</span></label>
+                    <label for="regEmail">📧 Email Address <span class="required">*</span></label>
                     <input type="email" id="regEmail" name="email" required placeholder="your.email@example.com" autocomplete="email">
                 </div>
 
                 <div class="form-group">
-                    <label for="regUsername"> Username <span class="required">*</span></label>
+                    <label for="regUsername">🆔 Username <span class="required">*</span></label>
                     <input type="text" id="regUsername" name="username" required placeholder="Choose a username" autocomplete="username" minlength="4">
                     <small style="color: #6b7280; display: block; margin-top: 5px;">
                         Must be at least 4 characters
@@ -96,7 +96,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="regRole"> Role <span class="required">*</span></label>
+                    <label for="regRole">👔 Role <span class="required">*</span></label>
                     <select id="regRole" name="role" required>
                         <option value="">Select your role</option>
                         <option value="Administrator">Administrator</option>
@@ -107,7 +107,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="regPosition"> Position/Department</label>
+                    <label for="regPosition">💼 Position/Department</label>
                     <input type="text" id="regPosition" name="position" placeholder="e.g., Barangay Secretary, Health Worker" autocomplete="organization-title">
                 </div>
 
@@ -119,7 +119,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block">
-                    <span>✓</span> Create Account
+                    <span></span> Create Account
                 </button>
 
                 <button type="button" onclick="showLoginForm()" class="btn btn-secondary btn-block" style="margin-top: 10px;">
@@ -145,7 +145,7 @@
                     <div style="display:flex;align-items:center;gap:14px;">
                         <img src="logo.png" alt="Barangay Danao Logo" class="header-logo" onerror="this.style.display='none'">
                         <div>
-                            <h1> LGU Admin Portal</h1>
+                            <h1>LGU Admin Portal</h1>
                             <p class="subtitle">Barangay Danao, Antequera, Bohol</p>
                         </div>
                     </div>
@@ -168,19 +168,19 @@
                         </div>
                     </div>
                     <div class="header-btns">
+                        <button onclick="refreshReports()" id="refreshBtnPlain" class="btn btn-refresh">
+                            <span id="refreshIconPlain"></span> <span class="btn-label">Refresh</span>
+                        </button>
                         <div id="newReportsBadgeWrap" style="display:none;position:relative;">
                             <span id="newReportsBadge" style="position:absolute;top:-6px;right:-6px;background:#ef4444;color:white;font-size:11px;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px;z-index:10;animation:pulse-badge 1.5s infinite;">0</span>
                         </div>
                         <div class="user-badge"><span></span><span id="currentUser">Admin</span></div>
-                        <span id="roleBadge" style="background:#8B1538;color:white;padding:3px 10px;border-radius:12px;font-size:0.78em;font-weight:600;" class="role-badge-desktop">🔑 Administrator</span>
-                        <a href="citizen-portal.html" class="btn btn-secondary citizen-btn"><span></span> <span class="btn-label">Citizen Portal</span></a>
+                        <span id="roleBadge" style="background:#8B1538;color:white;padding:3px 10px;border-radius:12px;font-size:0.78em;font-weight:600;" class="role-badge-desktop">Administrator</span>
+                        <a href="citizen-portal.html" class="btn btn-secondary citizen-btn"> Citizen Portal</a>
                         <button onclick="openNotificationSettings()" class="btn notif-btn" style="background:linear-gradient(135deg,#8B1538,#b91c4e);color:white;border:none;">
-                            <span></span> <span class="btn-label">Notifications</span>
+                             Notifications
                         </button>
-                        <button onclick="refreshReports()" id="refreshBtnPlain" class="btn btn-refresh">
-                            <span id="refreshIconPlain">↻</span> <span class="btn-label">Refresh</span>
-                        </button>
-                        <button onclick="logout()" class="btn btn-danger"><span></span> <span class="btn-label">Logout</span></button>
+                        <button onclick="logout()" class="btn btn-danger"> Logout</button>
                     </div>
                 </div>
             </div>
@@ -189,29 +189,29 @@
         <!-- Navigation -->
         <nav class="nav-tabs">
             <button class="nav-tab active" onclick="switchTab('track')">
-                <span>📍</span><span class="nav-label"> Track Reports</span>
+                <span class="nav-label"> Track Reports</span>
             </button>
             <button class="nav-tab" onclick="switchTab('dashboard')">
-                <span>📊</span><span class="nav-label"> Dashboard</span>
+                <span class="nav-label"> Dashboard</span>
             </button>
             <button class="nav-tab" onclick="switchTab('analytics')">
-                <span>📈</span><span class="nav-label"> Analytics</span>
+                <span class="nav-label"> Analytics</span>
             </button>
             <button class="nav-tab" onclick="switchTab('manage')">
-                <span>⚙️</span><span class="nav-label"> Manage</span>
+                <span class="nav-label"> Manage</span>
             </button>
             <button class="nav-tab" onclick="switchTab('users')" id="usersTab" style="position:relative;">
-                <span>👥</span><span class="nav-label"> Users</span>
+                <span class="nav-label"> Users</span>
                 <span id="pendingApprovalsBadge" style="display:none;position:absolute;top:6px;right:4px;background:#ef4444;color:white;font-size:10px;font-weight:800;min-width:16px;height:16px;border-radius:8px;align-items:center;justify-content:center;padding:0 3px;animation:pulse-badge 1.5s infinite;">0</span>
             </button>
             <button class="nav-tab" onclick="switchTab('album')">
-                <span>🖼️</span><span class="nav-label"> Album</span>
+                <span class="nav-label"> Album</span>
             </button>
         </nav>
 
         <!-- Staff Notice Banner -->
         <div id="staffNoticeBanner" style="display:none;background:linear-gradient(135deg,#1e40af,#2563eb);color:white;padding:14px 20px;border-radius:10px;margin-bottom:20px;align-items:center;gap:14px;">
-            <span style="font-size:1.5em;"></span>
+            <span style="font-size:1.5em;">👁️</span>
             <div>
                 <strong style="font-size:1em;">Staff View-Only Mode</strong>
                 <p style="margin:3px 0 0;font-size:0.87em;opacity:0.9;">You can view and print reports. Contact an Administrator to make changes.</p>
@@ -222,13 +222,13 @@
         <div id="track" class="tab-content active">
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title"> Track Reports</h2>
+                    <h2 class="card-title">Track Reports</h2>
                     <div style="display: flex; gap: 10px;">
                         <button id="exportBtnTrack" class="btn btn-success" onclick="exportToExcel()">
                             <span></span> Export to Excel
                         </button>
                         <button class="btn btn-secondary" onclick="displayReports()">
-                            <span>↻</span> Refresh
+                            <span></span> Refresh
                         </button>
                     </div>
                 </div>
@@ -268,43 +268,43 @@
             <!-- Statistics Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-icon" style="background: #fef3e6; color: #8B1538;">📊</div>
+                    <div class="stat-icon" style="background: #fef3e6; color: #8B1538;"></div>
                     <div class="stat-value" id="dashTotalReports">0</div>
                     <div class="stat-label">Total Reports</div>
-                    <div class="stat-change positive">↑ 12% from last month</div>
+                    <div class="stat-change positive"> 12% from last month</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;">⏳</div>
+                    <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;"></div>
                     <div class="stat-value" id="dashPendingCount">0</div>
                     <div class="stat-label">Pending</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon" style="background: #fef3e6; color: #D4AF37;">🔄</div>
+                    <div class="stat-icon" style="background: #fef3e6; color: #D4AF37;"></div>
                     <div class="stat-value" id="dashInProgressCount">0</div>
                     <div class="stat-label">In Progress</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon" style="background: #d1fae5; color: #10b981;">✓</div>
+                    <div class="stat-icon" style="background: #d1fae5; color: #10b981;"></div>
                     <div class="stat-value" id="dashResolvedCount">0</div>
                     <div class="stat-label">Resolved</div>
-                    <div class="stat-change positive">↑ 85% resolution rate</div>
+                    <div class="stat-change positive"> 85% resolution rate</div>
                 </div>
             </div>
 
             <!-- Action Buttons -->
             <div style="display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;">
                 <button id="exportBtnDashboard" class="btn btn-success" onclick="exportToExcel()">
-                    <span></span> Export to Excel
+                    Export to Excel
                 </button>
                 <button id="clearAllDataBtn" class="btn btn-danger" onclick="clearAllData()">
-                    <span>🗑️</span> Clear All Data
+                    Clear All Data
                 </button>
             </div>
 
             <!-- Interactive Map -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title"> Barangay Danao - All Reports</h2>
+                    <h2 class="card-title">Barangay Danao - All Reports</h2>
                 </div>
                 <div class="map-container">
                     <div id="lguMap"></div>
@@ -343,7 +343,7 @@
             <!-- Recent Activity -->
             <div class="chart-container">
                 <div class="card-header">
-                    <h3 class="card-title"> Recent Activity</h3>
+                    <h3 class="card-title">Recent Activity</h3>
                 </div>
                 <div id="recentActivity"></div>
             </div>
@@ -353,17 +353,17 @@
         <div id="analytics" class="tab-content">
             <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
                 <div class="stat-card">
-                    <div class="stat-icon" style="background: #fef3e6; color: #8B1538;">⏱️</div>
+                    <div class="stat-icon" style="background: #fef3e6; color: #8B1538;"></div>
                     <div class="stat-value" id="avgResponseTime">N/A</div>
                     <div class="stat-label">Avg Response Time</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon" style="background: #fef3c7; color: #D4AF37;">📊</div>
+                    <div class="stat-icon" style="background: #fef3c7; color: #D4AF37;"></div>
                     <div class="stat-value" id="resolutionRate">0%</div>
                     <div class="stat-label">Resolution Rate</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon" style="background: #d1fae5; color: #10b981;">👥</div>
+                    <div class="stat-icon" style="background: #d1fae5; color: #10b981;"></div>
                     <div class="stat-value" id="activeUsers">0</div>
                     <div class="stat-label">Active Citizens</div>
                 </div>
@@ -379,7 +379,7 @@
                 <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
                     <h3 class="card-title"> Reports by Category</h3>
                     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                        <button class="btn-print-chart" onclick="printChartCard('cardCategoryChart','Reports by Category')" title="Print this chart"> Print Chart</button>
+                        <button class="btn-print-chart" onclick="printChartCard('cardCategoryChart','Reports by Category')" title="Print this chart">🖨️ Print Chart</button>
                         <div class="chart-type-switcher" id="categorySwitcher">
                         <button class="chart-type-btn active" onclick="switchCategoryChart('bar')" data-type="bar" title="Bar Chart">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="10" width="4" height="12"/><rect x="9" y="6" width="4" height="16"/><rect x="16" y="2" width="4" height="20"/></svg>
@@ -413,9 +413,9 @@
             <!-- ===== PENDING vs RESOLVED CHART ===== -->
             <div class="card" style="margin-bottom: 30px;" id="cardStatusChart">
                 <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
-                    <h3 class="card-title">✅ Pending vs Resolved by Category</h3>
+                    <h3 class="card-title"> Pending vs Resolved by Category</h3>
                     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                        <button class="btn-print-chart" onclick="printChartCard('cardStatusChart','Pending vs Resolved by Category')" title="Print this chart"> Print Chart</button>
+                        <button class="btn-print-chart" onclick="printChartCard('cardStatusChart','Pending vs Resolved by Category')" title="Print this chart">🖨️ Print Chart</button>
                         <div class="chart-type-switcher" id="statusSwitcher">
                         <button class="chart-type-btn active" onclick="switchStatusChart('groupedBar')" data-type="groupedBar" title="Grouped Bar">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="8" width="3" height="14"/><rect x="6" y="12" width="3" height="10"/><rect x="11" y="6" width="3" height="16"/><rect x="15" y="10" width="3" height="12"/><rect x="20" y="4" width="3" height="18"/></svg>
@@ -457,7 +457,7 @@
             <!-- Top Locations -->
             <div class="card" style="margin-bottom: 30px;">
                 <div class="card-header">
-                    <h3 class="card-title"> Top Issue Locations</h3>
+                    <h3 class="card-title">Top Issue Locations</h3>
                 </div>
                 <div id="locationHotspots"></div>
             </div>
@@ -470,7 +470,7 @@
                         <p style="color:#6b7280; font-size:0.88em; margin-top:4px;">Last 12 months — total reports submitted per month</p>
                     </div>
                     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                        <button class="btn-print-chart" onclick="printChartCard('cardTrendChart','Monthly Trend Analysis')" title="Print this chart"> Print Chart</button>
+                        <button class="btn-print-chart" onclick="printChartCard('cardTrendChart','Monthly Trend Analysis')" title="Print this chart">🖨️ Print Chart</button>
                         <div class="chart-type-switcher" id="trendSwitcher">
                         <button class="chart-type-btn active" onclick="switchTrendChart('line')" data-type="line" title="Line">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="2,18 7,10 12,14 17,6 22,8"/></svg>
@@ -506,19 +506,19 @@
             <div class="card" style="margin-bottom: 30px; border: 2px solid #8B1538;">
                 <div class="card-header">
                     <div>
-                        <h3 class="card-title"> Print All Reports by Month</h3>
+                        <h3 class="card-title">🖨️ Print All Reports by Month</h3>
                         <p style="color:#6b7280; font-size:0.88em; margin-top:4px;">Select a month to print a full report summary including all charts</p>
                     </div>
                 </div>
                 <div style="display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; margin-bottom:20px;">
                     <div>
-                        <label style="display:block; margin-bottom:6px; font-weight:600; color:#374151;">📅 Select Month</label>
+                        <label style="display:block; margin-bottom:6px; font-weight:600; color:#374151;"> Select Month</label>
                         <select id="printMonthSelect" style="padding:10px 16px; border:2px solid #e5e7eb; border-radius:8px; font-size:14px; min-width:200px;">
                             <option value="">-- Choose Month --</option>
                         </select>
                     </div>
                     <button class="btn btn-primary" onclick="printMonthlyReport()" style="height:44px;">
-                         Print Monthly Report
+                        🖨️ Print Monthly Report
                     </button>
                     <button class="btn btn-secondary" onclick="printAllChartsReport()" style="height:44px;">
                          Print All Charts
@@ -532,9 +532,15 @@
 
         <!-- Manage Reports Tab -->
         <div id="manage" class="tab-content">
+            <!-- Staff View-Only Banner -->
+            <div id="staffBanner" style="display:none;background:linear-gradient(135deg,#2563eb,#1e40af);color:white;padding:16px 20px;border-radius:12px;margin-bottom:20px;">
+                <div style="font-weight:800;font-size:1.05em;margin-bottom:6px;">📋 Staff Mode</div>
+                <div style="font-size:0.9em;opacity:0.95;">You can change report status, upload completion proof, and print reports. Contact an Administrator to delete reports.</div>
+            </div>
+
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title">⚙️ Manage Reports</h2>
+                    <h2 class="card-title"> Manage Reports</h2>
                     <div style="display: flex; gap: 10px;">
                         <button id="exportBtnManage" class="btn btn-success" onclick="exportToExcel()">
                             <span></span> Export to Excel
@@ -550,10 +556,10 @@
         <div id="users" class="tab-content">
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title">👥 Manage Users</h2>
+                    <h2 class="card-title"> Manage Users</h2>
                     <div style="display: flex; gap: 10px;">
                         <button class="btn btn-secondary" onclick="displayUsersList()">
-                            <span>↻</span> Refresh
+                            <span></span> Refresh
                         </button>
                     </div>
                 </div>
@@ -568,7 +574,7 @@
                 <!-- Album Header -->
                 <div style="background:linear-gradient(135deg,#1f2937,#374151);padding:24px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
                     <div style="display:flex;align-items:center;gap:14px;">
-                        <div style="width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:1.6em;">🖼️</div>
+                        <div style="width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:1.6em;"></div>
                         <div>
                             <h2 style="color:white;font-size:1.25em;font-weight:800;margin:0;">Proof Photo Album</h2>
                             <p style="color:rgba(255,255,255,0.6);font-size:0.83em;margin:4px 0 0;">All reported photos categorized by issue type</p>
@@ -578,7 +584,7 @@
                         <span id="albumPhotoCount" style="background:rgba(255,255,255,0.15);color:white;padding:5px 14px;border-radius:20px;font-size:0.83em;font-weight:700;">0 photos</span>
                         <button onclick="refreshAlbum()" style="padding:8px 18px;background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);border-radius:8px;font-size:0.85em;font-weight:600;cursor:pointer;transition:all 0.2s;"
                             onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
-                            ↻ Refresh
+                             Refresh
                         </button>
                     </div>
                 </div>
@@ -605,19 +611,19 @@
                         <select id="albumCategoryFilter" onchange="renderAlbum()"
                             style="padding:7px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:0.85em;font-weight:600;color:#374151;background:white;outline:none;cursor:pointer;">
                             <option value="">All Categories</option>
-                            <option value="Waste Management">🗑️ Waste Management</option>
-                            <option value="Infrastructure Damage">🏗️ Infrastructure Damage</option>
-                            <option value="Environmental Violation">🌿 Environmental Violation</option>
-                            <option value="Public Safety">🚨 Public Safety</option>
-                            <option value="Water & Sanitation">💧 Water & Sanitation</option>
-                            <option value="Street Lighting">💡 Street Lighting</option>
+                            <option value="Waste Management"> Waste Management</option>
+                            <option value="Infrastructure Damage"> Infrastructure Damage</option>
+                            <option value="Environmental Violation"> Environmental Violation</option>
+                            <option value="Public Safety"> Public Safety</option>
+                            <option value="Water & Sanitation"> Water & Sanitation</option>
+                            <option value="Street Lighting"> Street Lighting</option>
                             <option value="Other">📌 Other</option>
                         </select>
                     </div>
 
                     <!-- Search -->
                     <div style="flex:1;min-width:180px;position:relative;">
-                        <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:0.9em;">🔍</span>
+                        <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:0.9em;"></span>
                         <input id="albumSearch" type="text" placeholder="Search by location or report ID…"
                             oninput="renderAlbum()"
                             style="width:100%;padding:7px 10px 7px 30px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:0.85em;outline:none;box-sizing:border-box;"
